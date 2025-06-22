@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Custom Wedding Theme Colors */
+    --wedding-rose: 346 77% 60%;  /* #E95D7F - Vibrant pink */
+    --wedding-blush: 350 77% 90%; /* #FBDCE2 - Soft pink */
+    --wedding-cream: 39 77% 95%;  /* #FDF7E4 - Cream */
+    --wedding-gold: 45 87% 67%;   /* #F5CD6D - Gold */
+    --wedding-sage: 120 15% 70%;  /* #B7C4B7 - Sage green */
+    --wedding-navy: 210 50% 23%;  /* #1D3E5E - Navy blue */
+
+    /* Base Shadcn Variables */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: var(--wedding-rose);
+    --primary-foreground: 210 40% 98%;
+    --secondary: var(--wedding-blush);
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: var(--wedding-cream);
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: var(--wedding-rose);
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: var(--wedding-rose);
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: var(--wedding-rose);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Custom Font Classes */
+  .font-wedding-serif {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+  
+  .font-wedding-sans {
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+@layer components {
+  /* Container */
+  .wedding-container {
+    @apply container px-4 mx-auto max-w-7xl;
+  }
+  
+  /* Section Spacing */
+  .wedding-section {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+  
+  /* Card Component */
+  .wedding-card {
+    @apply bg-white rounded-lg border border-gray-200 shadow-sm p-6;
+  }
+  
+  /* Button Variants */
+  .btn-wedding {
+    @apply bg-[hsl(var(--wedding-rose))] text-white hover:bg-[hsl(var(--wedding-rose)/0.9)] transition-colors;
+  }
+  
+  .btn-wedding-outline {
+    @apply border border-[hsl(var(--wedding-rose))] text-[hsl(var(--wedding-rose))] bg-transparent hover:bg-[hsl(var(--wedding-rose)/0.1)] transition-colors;
+  }
+}
+
+/* Additional Custom Styles */
+input[type=range]::-webkit-slider-thumb {
+  @apply bg-[hsl(var(--wedding-rose))];
+}
+
+/* Override focus styles for better accessibility */
+*:focus-visible {
+  @apply outline-none ring-2 ring-[hsl(var(--wedding-rose))] ring-offset-2;
+}
