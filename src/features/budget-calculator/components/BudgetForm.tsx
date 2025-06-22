@@ -5,13 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StepIndicator } from '@/components/ui/StepIndicator';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+// Select component not used in this file
 import { cn } from '@/lib/utils';
 import type {
   BudgetFormData,
@@ -32,7 +26,7 @@ export const BudgetForm: React.FC<BudgetFormProps> = ({
     handleSubmit,
     control,
     watch,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<BudgetFormData>({
     resolver: zodResolver(budgetFormSchema),
     defaultValues: initialData,

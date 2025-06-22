@@ -146,7 +146,7 @@ export const useBudgetExport = ({ formData, result }: UseBudgetExportProps) => {
         pdf.text(`${index + 1}. ${rec.title}`, 15, yPos);
         
         // Wrap description text
-        const splitDesc = pdf.splitTextToSize(rec.description, pageWidth - 40);
+        const splitDesc = pdf.splitTextToSize(rec.description || '', pageWidth - 40);
         pdf.setFontSize(9);
         pdf.setTextColor(80, 80, 80);
         pdf.text(splitDesc, 20, yPos + 5);
@@ -161,7 +161,7 @@ export const useBudgetExport = ({ formData, result }: UseBudgetExportProps) => {
       pdf.text('Potential Savings:', 15, yPos);
       
       yPos += 10;
-      result.savingsSuggestions.slice(0, 5).forEach((suggestion, index) => {
+      (result.savingsSuggestions || []).slice(0, 5).forEach((suggestion, index) => {
         pdf.setFontSize(10);
         pdf.setTextColor(0, 0, 0);
         pdf.text(`${index + 1}. ${suggestion.title} - $${suggestion.potentialSavings.toLocaleString()}`, 15, yPos);

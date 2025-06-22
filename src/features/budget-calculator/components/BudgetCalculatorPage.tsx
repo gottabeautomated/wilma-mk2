@@ -4,7 +4,6 @@ import { LoadingAnimation } from './LoadingAnimation';
 import { BudgetResults } from './BudgetResults';
 import { EmailCaptureModal } from './EmailCaptureModal';
 import { generateBudgetBreakdown } from '../utils/budgetCalculations';
-import { useBudgetCalculation } from '../hooks/useBudgetCalculation';
 import type { BudgetFormData, BudgetResult } from '../types/budget.types';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';

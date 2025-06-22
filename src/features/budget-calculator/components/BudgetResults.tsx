@@ -12,7 +12,6 @@ import {
   WeddingCardContent,
   WeddingCardHeader,
   WeddingCardTitle,
-  WeddingCardDescription,
 } from "@/components/ui/WeddingCard";
 
 interface BudgetResultsProps {
