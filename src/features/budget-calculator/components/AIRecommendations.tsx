@@ -9,12 +9,14 @@ export const AIRecommendations: React.FC<AIRecommendationsProps> = ({
 }) => {
   // Recommendations sorted by impact (high to low)
   const sortedRecommendations = [...recommendations].sort((a, b) => {
-    const impactOrder = { high: 0, medium: 1, low: 2 };
-    return impactOrder[a.impact] - impactOrder[b.impact];
+    const impactOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
+    const aImpact = a.impact || 'low';
+    const bImpact = b.impact || 'low';
+    return impactOrder[aImpact] - impactOrder[bImpact];
   });
 
   // Savings suggestions sorted by potential savings (high to low)
-  const sortedSavings = [...savingsSuggestions].sort(
+  const sortedSavings = [...(savingsSuggestions || [])].sort(
     (a, b) => b.potentialSavings - a.potentialSavings
   );
 
@@ -122,7 +124,7 @@ export const AIRecommendations: React.FC<AIRecommendationsProps> = ({
           <div className="flex justify-between items-center mb-3">
             <h4 className="font-medium text-gray-800">Potential Savings</h4>
             <span className="text-green-600 font-medium">
-              Up to ${totalPotentialSavings.toLocaleString()}
+              Up to ${(totalPotentialSavings || 0).toLocaleString()}
             </span>
           </div>
           

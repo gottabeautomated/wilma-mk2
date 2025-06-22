@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Download, Save, Calendar, Users, Map, Palette } from "lucide-react";
+// Remove unused imports
 import { BudgetChart } from "./BudgetChart";
 import { CategoryBreakdown } from "./CategoryBreakdown";
 import { AIRecommendations } from "./AIRecommendations";
@@ -115,7 +115,7 @@ export function BudgetResults({ result, formData }: BudgetResultsProps) {
             <p className="text-sm text-muted-foreground mb-1">Location</p>
             <p className="font-medium">{formData.location}</p>
             <p className="text-xs text-muted-foreground">
-              {result.result.regionalFactor.description}
+              Regional factor: {result.result.regionalFactor.toFixed(2)}x
             </p>
           </div>
           
