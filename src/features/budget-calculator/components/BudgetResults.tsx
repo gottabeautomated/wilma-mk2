@@ -22,13 +22,13 @@ interface BudgetResultsProps {
 
 export function BudgetResults({ result, formData }: BudgetResultsProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
-  const { exportToPDF, isExporting } = useBudgetExport();
+  const { exportToPdf, isExporting } = useBudgetExport({ formData, result: result.result });
   const { toast } = useToast();
   const resultRef = useRef<HTMLDivElement>(null);
   
   const handleExportPDF = async () => {
     try {
-      await exportToPDF(resultRef, result, formData);
+      await exportToPdf();
       
       toast({
         title: "PDF Exported",
@@ -99,7 +99,7 @@ export function BudgetResults({ result, formData }: BudgetResultsProps) {
           
           <div className="text-right">
             <p className="text-2xl font-bold text-[hsl(var(--wedding-rose))]">
-              ${result.totalBudget.toLocaleString()}
+              ${result.result.totalBudget.toLocaleString()}
             </p>
             <p className="text-sm text-muted-foreground">Total Budget</p>
           </div>
@@ -115,7 +115,7 @@ export function BudgetResults({ result, formData }: BudgetResultsProps) {
             <p className="text-sm text-muted-foreground mb-1">Location</p>
             <p className="font-medium">{formData.location}</p>
             <p className="text-xs text-muted-foreground">
-              {result.regionalFactor.description}
+              {result.result.regionalFactor.description}
             </p>
           </div>
           
@@ -135,12 +135,12 @@ export function BudgetResults({ result, formData }: BudgetResultsProps) {
             <span className="mr-2">AI Confidence:</span>
             <span 
               className={`font-medium ${
-                result.confidenceScore >= 85 ? "text-green-600" : 
-                result.confidenceScore >= 70 ? "text-amber-600" : 
+                result.result.confidenceScore >= 85 ? "text-green-600" : 
+                result.result.confidenceScore >= 70 ? "text-amber-600" : 
                 "text-red-600"
               }`}
             >
-              {result.confidenceScore}%
+              {result.result.confidenceScore}%
             </span>
           </div>
           
@@ -201,8 +201,8 @@ export function BudgetResults({ result, formData }: BudgetResultsProps) {
           </WeddingCardHeader>
           <WeddingCardContent>
             <BudgetChart 
-              categories={result.categories} 
-              totalBudget={result.totalBudget}
+              categories={result.result.categories} 
+              totalBudget={result.result.totalBudget}
               selectedCategory={selectedCategory}
               onSelectCategory={setSelectedCategory}
             />
@@ -227,8 +227,8 @@ export function BudgetResults({ result, formData }: BudgetResultsProps) {
           </WeddingCardHeader>
           <WeddingCardContent>
             <CategoryBreakdown 
-              categories={result.categories} 
-              totalBudget={result.totalBudget}
+              categories={result.result.categories} 
+              totalBudget={result.result.totalBudget}
               selectedCategory={selectedCategory}
               onSelectCategory={setSelectedCategory}
             />
@@ -253,10 +253,10 @@ export function BudgetResults({ result, formData }: BudgetResultsProps) {
           </WeddingCardHeader>
           <WeddingCardContent>
             <AIRecommendations 
-              recommendations={result.recommendations}
-              savingsSuggestions={result.savingsSuggestions}
-              confidenceScore={result.confidenceScore}
-              totalPotentialSavings={result.totalPotentialSavings}
+              recommendations={result.result.recommendations}
+              savingsSuggestions={result.result.savingsSuggestions}
+              confidenceScore={result.result.confidenceScore}
+              totalPotentialSavings={result.result.totalPotentialSavings}
             />
           </WeddingCardContent>
         </WeddingCard>

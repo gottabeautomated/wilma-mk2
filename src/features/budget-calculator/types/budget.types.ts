@@ -1,178 +1,182 @@
-// Form data types
-export type WeddingStyle = "modern" | "rustic" | "classic" | "boho" | "vintage" | "outdoor";
+import { z } from 'zod';
 
-export interface FormStep {
+// Budget form schema with validation
+export const budgetFormSchema = z.object({
+  guestCount: z.number().min(10, "Minimum 10 guests").max(1000, "Maximum 1000 guests"),
+  location: z.string().min(2, "Location must be at least 2 characters"),
+  weddingDate: z.date().min(new Date(), "Wedding date must be in the future"),
+  style: z.enum(['modern', 'rustic', 'classic', 'boho', 'vintage', 'outdoor'], {
+    required_error: "Please select a wedding style",
+  }),
+  budgetRange: z.number().min(5000, "Minimum budget is $5,000").max(200000, "Maximum budget is $200,000"),
+  priorities: z.array(z.string()).min(1, "Select at least 1 priority").max(5, "Maximum 5 priorities"),
+  partnerNames: z.tuple([
+    z.string().min(1, "Partner 1 name is required"),
+    z.string().min(1, "Partner 2 name is required"),
+  ]),
+});
+
+// Form data type derived from schema
+export type BudgetFormData = z.infer<typeof budgetFormSchema>;
+
+// Form props for BudgetForm component
+export interface BudgetFormProps {
+  onSubmit: (data: BudgetFormData) => void;
+  initialData: BudgetFormData;
+  currentStep: 1 | 2 | 3 | 4;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+}
+
+// Budget category type
+export interface BudgetCategory {
   id: string;
-  label: string;
+  name: string;
   description: string;
+  defaultPercentage: number;
+  minPercentage: number;
+  maxPercentage: number;
+  priorityIncrease: number;
 }
 
-export interface BudgetFormData {
-  guestCount: number;
-  location: string;
-  weddingDate: Date;
-  style: WeddingStyle;
-  budgetRange: number;
-  priorities: string[];
-  relationshipYears?: number;
-  partnerNames: string[];
-}
-
-// Coach tips
-export const coachTips: Record<string, string> = {
-  personalInfo: "Providing both partner names helps us personalize your budget plan. If you're planning solo, just fill in one name!",
-  basics: "Guest count is one of the biggest factors affecting your wedding budget. Each guest adds costs for catering, beverages, rentals, and more.",
-  details: "Your wedding style influences many budget decisions. Modern weddings often focus on unique venues, while rustic weddings may save on natural decor elements.",
-  budget: "Being clear about your priorities helps allocate your budget wisely. Most couples spend 40-50% on venue and catering combined."
-};
-
-// Style preview data
-export interface StylePreviewData {
-  description: string;
-  palette: string[];
-}
-
-export const stylePreviewData: Record<WeddingStyle, StylePreviewData> = {
-  modern: {
-    description: "Clean lines, minimalist approach, architectural details, and a sophisticated palette.",
-    palette: ["#121212", "#FFFFFF", "#DDDDDD", "#707070", "#E5E5E5"]
-  },
-  rustic: {
-    description: "Natural elements, wood textures, earth tones, and a relaxed countryside feel.",
-    palette: ["#5E4B3E", "#A47551", "#DEBA9D", "#94A061", "#615D47"]
-  },
-  classic: {
-    description: "Timeless elegance with structured designs, traditional elements, and refined details.",
-    palette: ["#060047", "#B3005E", "#E90064", "#FF5F9E", "#FFF5E0"]
-  },
-  boho: {
-    description: "Free-spirited style with eclectic details, textural elements, and nature-inspired touches.",
-    palette: ["#7D5A50", "#B4846C", "#E5B299", "#FCDEC0", "#7D5A50"]
-  },
-  vintage: {
-    description: "Nostalgic elements with antique touches, soft colors, and romantic details.",
-    palette: ["#3A3042", "#DB9D47", "#FF784F", "#EBBAB9", "#FAF2F2"]
-  },
-  outdoor: {
-    description: "Natural settings with garden elements, seasonal influences, and environmental harmony.",
-    palette: ["#1A4D2E", "#FF9F29", "#FAF3E3", "#3C8654", "#D2E3C8"]
-  }
-};
-
-// Budget calculation result types
-export interface CategoryAllocation {
-  category: string;
+// Budget breakdown item
+export interface BudgetBreakdownItem {
+  categoryId: string;
+  id?: string;
+  name: string;
   amount: number;
   percentage: number;
-  isHighPriority: boolean;
+  description: string;
+  isPriority: boolean;
+  color?: string;
+  recommendations?: string[];
+  savingTips?: string[];
+  isHighPriority?: boolean;
+}
+
+// Budget recommendation
+export interface BudgetRecommendation {
+  categoryId: string;
+  text: string;
+  potentialSavings: number;
+  confidenceScore: number;
+  title?: string;
   description?: string;
+  impact?: 'high' | 'medium' | 'low';
+  category?: string;
+}
+
+// Savings suggestion
+export interface SavingsSuggestion {
+  title: string;
+  description: string;
+  potentialSavings: number;
+  category: string;
+}
+
+// Budget breakdown result
+export interface BudgetBreakdown {
+  totalBudget: number;
+  categories: BudgetBreakdownItem[];
+  recommendations: BudgetRecommendation[];
+  confidenceScore: number;
+  regionalFactor: number;
+  seasonalFactor: number;
+  savingsSuggestions?: SavingsSuggestion[];
+  totalPotentialSavings?: number;
+}
+
+// Budget result type
+export interface BudgetResult {
+  formData: BudgetFormData;
+  result: BudgetBreakdown;
+}
+
+// Email capture form type
+export interface EmailCaptureForm {
+  email: string;
+}
+
+// Component Props
+export interface BudgetChartProps {
+  categories: BudgetBreakdownItem[];
+  totalBudget: number;
+  isPriority?: (categoryId: string) => boolean;
+  selectedCategory?: string;
+  onSelectCategory?: (id: string) => void;
+}
+
+export interface CategoryBreakdownProps {
+  categories: BudgetBreakdownItem[];
+  totalBudget: number;
+  isPriority?: (categoryId: string) => boolean;
+  selectedCategory?: string;
+  onSelectCategory?: (id: string | undefined) => void;
+}
+
+export interface AIRecommendationsProps {
+  recommendations: BudgetRecommendation[];
+  savingsSuggestions?: SavingsSuggestion[];
+  confidenceScore: number;
+  totalPotentialSavings?: number;
+}
+
+export interface EmailCaptureModalProps {
+  isOpen: boolean;
+  onSubmit: (email: string) => Promise<void>;
+  onSkip: () => void;
+  formData: BudgetFormData;
+}
+
+// Additional types for calculations
+export type WeddingStyle = 'modern' | 'rustic' | 'classic' | 'boho' | 'vintage' | 'outdoor';
+
+export interface CategoryAllocation {
+  categoryId?: string;
+  id?: string;
+  percentage: number;
   name?: string;
-  recommendation?: string;
-  savingsTip?: {
-    description: string;
-    potentialSavings: number;
-  };
+  amount?: number;
+  description?: string;
+  recommendations?: string[];
+  savingTips?: string[];
+  color?: string;
+  isHighPriority?: boolean;
+  isPriority?: boolean;
+}
+
+export interface AIRecommendation {
+  title: string;
+  description: string;
+  impact: 'high' | 'medium' | 'low';
+  category: string;
+  text?: string;
+  savingAmount?: number;
+  confidence?: 'high' | 'medium' | 'low';
 }
 
 export interface RegionalFactor {
   region: string;
   factor: number;
   description: string;
+  costFactor?: number; // For compatibility
+  locations?: string[];
 }
 
 export interface StyleFactor {
-  style: string;
+  style: WeddingStyle;
   factor: number;
   description: string;
+  costFactor?: number; // For compatibility
+  categoryFactors?: Record<string, number>;
 }
 
-export interface CategoryImpact {
-  category: string;
-  effect: string;
-}
-
-export interface AIRecommendation {
+// Additional types for AIRecommendations component
+export interface RecommendationDisplay {
   id: string;
   title: string;
   description: string;
-  importance: "high" | "medium" | "low";
-  rationale: string;
-  categoryImpacts: CategoryImpact[];
-}
-
-export interface SavingsSuggestion {
-  id: string;
-  title: string;
-  description: string;
+  impact: 'high' | 'medium' | 'low';
   potentialSavings: number;
-  importance: "high" | "medium" | "low";
-  implementation: string;
-  tradeoffs: string;
-}
-
-export interface BudgetResult {
-  totalBudget: number;
-  categories: CategoryAllocation[];
-  recommendations: AIRecommendation[];
-  savingsSuggestions: SavingsSuggestion[];
-  confidenceScore: number;
-  totalPotentialSavings: number;
-  regionalFactor: RegionalFactor;
-  styleFactor: StyleFactor;
-}
-
-export interface BudgetCalculationResult {
-  result: BudgetResult;
-  formData: BudgetFormData;
-}
-
-// Component prop types
-export interface BudgetFormProps {
-  onSubmit: (data: BudgetFormData) => void;
-  initialData: BudgetFormData;
-  currentStep?: number;
-  onNextStep?: () => void;
-  onPrevStep?: () => void;
-}
-
-export interface BudgetChartProps {
-  categories: CategoryAllocation[];
-  totalBudget: number;
-  selectedCategory?: string;
-  onSelectCategory?: (category: string) => void;
-}
-
-export interface CategoryBreakdownProps {
-  categories: CategoryAllocation[];
-  totalBudget: number;
-  selectedCategory?: string;
-  onSelectCategory?: (category: string) => void;
-}
-
-export interface AIRecommendationsProps {
-  recommendations: AIRecommendation[];
-  savingsSuggestions: SavingsSuggestion[];
-  confidenceScore: number;
-  totalPotentialSavings: number;
-}
-
-export interface BudgetResultsProps {
-  result: BudgetResult;
-  formData: BudgetFormData;
-}
-
-export interface EmailCaptureModalProps {
-  isOpen: boolean;
-  onSubmit: (email: string) => void;
-  onSkip: () => void;
-  formData: BudgetFormData;
-}
-
-// Chart data types
-export interface ChartData {
-  name: string;
-  value: number;
-  amount: number;
-  color: string;
-  isHighPriority: boolean;
+  category: string;
 }

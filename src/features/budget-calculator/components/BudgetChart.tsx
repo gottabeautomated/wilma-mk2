@@ -1,177 +1,112 @@
-import { useState, useCallback } from "react";
-import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Legend } from "recharts";
-import type { BudgetChartProps, CategoryAllocation, ChartData } from "../types/budget.types";
+import React from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import type { BudgetChartProps } from '../types/budget.types';
 
-// Wedding color palette
-const COLORS = [
-  "#FF5F9E", // rose
-  "#B3005E", // deep rose
-  "#060047", // navy
-  "#FFF5E0", // cream
-  "#E90064", // accent 
-  "#FF9F29", // gold
-  "#3C8654", // green
-  "#7D5A50", // brown
-  "#DB9D47", // mustard
-  "#3A3042", // purple
-  "#94A061"  // olive
-];
-
-// Active shape for the pie chart (when a segment is selected)
-const renderActiveShape = (props: any) => {
-  const {
-    cx, cy, innerRadius, outerRadius, startAngle, endAngle,
-    fill, payload, percent, value
-  } = props;
-
-  const formattedValue = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0
-  }).format(value);
-
-  return (
-    <g>
-      <text x={cx} y={cy - 10} dy={8} textAnchor="middle" fill="#333" fontSize={16} fontWeight={600}>
-        {payload.name}
-      </text>
-      <text x={cx} y={cy + 20} textAnchor="middle" fill="#666" fontSize={14}>
-        {formattedValue}
-      </text>
-      <text x={cx} y={cy + 40} textAnchor="middle" fill="#999" fontSize={12}>
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius + 5}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-      />
-      <Sector
-        cx={cx}
-        cy={cy}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        innerRadius={outerRadius + 10}
-        outerRadius={outerRadius + 15}
-        fill={fill}
-      />
-    </g>
-  );
-};
-
-export function BudgetChart({ 
+export const BudgetChart: React.FC<BudgetChartProps & {
+  selectedCategory?: string;
+  onSelectCategory?: (id: string) => void;
+}> = ({ 
   categories, 
-  totalBudget, 
+  totalBudget,
   selectedCategory,
   onSelectCategory 
-}: BudgetChartProps) {
-  // State for active index (which segment is selected)
-  const [activeIndex, setActiveIndex] = useState(-1);
-
-  // Format the data for the pie chart
-  const chartData: ChartData[] = categories.map((category, index) => ({
-    name: category.category,
-    value: category.percentage,
-    amount: category.amount,
-    color: COLORS[index % COLORS.length],
-    isHighPriority: category.isHighPriority
+}) => {
+  // Format data for the chart
+  const chartData = categories.map(category => ({
+    id: category.id,
+    name: category.name,
+    value: category.amount,
+    percentage: category.percentage,
+    color: category.color
   }));
 
-  // Handler for when a segment is hovered
-  const onPieEnter = useCallback((_: any, index: number) => {
-    setActiveIndex(index);
-    if (onSelectCategory) {
-      onSelectCategory(chartData[index].name);
+  // Custom tooltip content
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white p-3 rounded-lg shadow-md border border-gray-100">
+          <p className="font-medium text-gray-800">{data.name}</p>
+          <p className="text-gray-600">${data.value.toLocaleString()}</p>
+          <p className="text-gray-500">{(data.percentage * 100).toFixed(1)}% of budget</p>
+        </div>
+      );
     }
-  }, [chartData, onSelectCategory]);
+    return null;
+  };
 
-  // Handler for when mouse leaves the pie chart
-  const onPieLeave = useCallback(() => {
-    setActiveIndex(-1);
+  // Handle category selection
+  const handlePieClick = (data: any) => {
     if (onSelectCategory) {
-      onSelectCategory("");
+      onSelectCategory(data.id);
     }
-  }, [onSelectCategory]);
-
-  // Custom legend with priority indicator
-  const renderLegend = (props: any) => {
-    const { payload } = props;
-    
-    return (
-      <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-2 gap-y-1 text-xs mt-4">
-        {payload.map((entry: any, index: number) => {
-          const category = categories.find(c => c.category === entry.value);
-          return (
-            <li 
-              key={`item-${index}`} 
-              className={`flex items-center cursor-pointer transition-opacity hover:opacity-75 ${
-                selectedCategory && selectedCategory !== entry.value ? 'opacity-50' : ''
-              }`}
-              onClick={() => {
-                if (onSelectCategory) {
-                  onSelectCategory(entry.value);
-                  setActiveIndex(payload.findIndex((p: any) => p.value === entry.value));
-                }
-              }}
-            >
-              <div className="w-3 h-3 mr-1" style={{ backgroundColor: entry.color }} />
-              <span className="truncate">
-                {entry.value}
-                {category?.isHighPriority && (
-                  <span className="ml-1 text-[hsl(var(--wedding-gold))]">★</span>
-                )}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-    );
   };
 
   return (
-    <div className="w-full h-80 sm:h-96">
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie
-            activeIndex={activeIndex}
-            activeShape={renderActiveShape}
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={80}
-            dataKey="amount"
-            onMouseEnter={onPieEnter}
-            onMouseLeave={onPieLeave}
-          >
-            {chartData.map((entry, index) => (
-              <Cell 
-                key={`cell-${index}`} 
-                fill={entry.color}
-                stroke={entry.isHighPriority ? "#FFD700" : "#fff"}
-                strokeWidth={entry.isHighPriority ? 2 : 1}
-              />
-            ))}
-          </Pie>
-          <Legend content={renderLegend} />
-        </PieChart>
-      </ResponsiveContainer>
+    <div className="w-full bg-white rounded-lg shadow-md p-4">
+      <h3 className="text-lg font-medium text-gray-800 mb-4">Budget Breakdown</h3>
       
-      {/* Total budget display */}
-      <div className="text-center mt-2">
-        <div className="text-sm text-gray-500">Total Budget</div>
-        <div className="text-xl font-semibold text-[hsl(var(--wedding-navy))]">
-          {new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 0
-          }).format(totalBudget)}
+      <div className="text-center mb-4">
+        <div className="text-3xl font-serif text-gray-800">
+          ${totalBudget.toLocaleString()}
         </div>
+        <div className="text-sm text-gray-500">Total Wedding Budget</div>
+      </div>
+      
+      <div className="h-72">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={chartData}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={90}
+              paddingAngle={1}
+              dataKey="value"
+              onClick={handlePieClick}
+              isAnimationActive={true}
+              animationDuration={800}
+              animationBegin={200}
+            >
+              {chartData.map((entry) => (
+                <Cell 
+                  key={`cell-${entry.id}`} 
+                  fill={entry.color} 
+                  stroke={selectedCategory === entry.id ? '#ffffff' : 'transparent'}
+                  strokeWidth={selectedCategory === entry.id ? 2 : 0}
+                  style={{ 
+                    filter: selectedCategory === entry.id 
+                      ? 'drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.3))' 
+                      : 'none',
+                    opacity: selectedCategory && selectedCategory !== entry.id ? 0.7 : 1,
+                    cursor: 'pointer'
+                  }}
+                />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+            <Legend 
+              layout="vertical" 
+              verticalAlign="middle" 
+              align="right"
+              iconType="circle"
+              formatter={(value: string) => (
+                <span className="text-sm text-gray-600 cursor-pointer">{value}</span>
+              )}
+              onClick={(data: any) => {
+                if (onSelectCategory) {
+                  onSelectCategory(data.id);
+                }
+              }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      
+      <div className="mt-4 text-center text-sm text-gray-500">
+        Click on a segment or legend item to see category details
       </div>
     </div>
   );
-}
+};

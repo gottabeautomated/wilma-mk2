@@ -1,4 +1,4 @@
-import { supabase, handleSupabaseError } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 // Interface for budget calculation
 export interface BudgetCalculation {

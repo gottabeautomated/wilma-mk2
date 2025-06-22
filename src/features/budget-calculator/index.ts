@@ -1,4 +1,5 @@
 import { BudgetCalculator } from './components/BudgetCalculator';
+import { BudgetCalculatorPage } from './components/BudgetCalculatorPage';
 import { BudgetForm } from './components/BudgetForm';
 import { BudgetResults } from './components/BudgetResults';
 import { BudgetChart } from './components/BudgetChart';
@@ -11,6 +12,7 @@ import { useBudgetExport } from './hooks/useBudgetExport';
 
 export {
   BudgetCalculator,
+  BudgetCalculatorPage,
   BudgetForm,
   BudgetResults,
   BudgetChart,

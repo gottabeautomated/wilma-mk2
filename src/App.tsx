@@ -4,7 +4,7 @@ import { Layout } from '@/components/layout/Layout'
 import { Home } from '@/pages/Home'
 import { ToolGallery } from '@/pages/ToolGallery'
 import { Dashboard } from '@/pages/Dashboard'
-import { BudgetCalculator } from '@/features/budget-calculator/components/BudgetCalculator'
+import { BudgetCalculatorPage } from '@/features/budget-calculator/components/BudgetCalculatorPage'
 import { TimelineGenerator } from '@/features/timeline-generator/components/TimelineGenerator'
 import { GuestManager } from '@/features/guest-manager/components/GuestManager'
 import { VenueAnalyzer } from '@/features/venue-analyzer/components/VenueAnalyzer'
@@ -30,7 +30,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/tools" element={<ToolGallery />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/budget-calculator" element={<BudgetCalculator />} />
+            <Route path="/budget-calculator" element={<BudgetCalculatorPage />} />
             <Route path="/timeline-generator" element={<TimelineGenerator />} />
             <Route path="/guest-manager" element={<GuestManager />} />
             <Route path="/venue-analyzer" element={<VenueAnalyzer />} />

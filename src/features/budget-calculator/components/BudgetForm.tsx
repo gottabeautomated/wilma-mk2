@@ -1,721 +1,387 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { z } from 'zod';
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  ChevronRight, 
-  ChevronLeft, 
-  Calendar, 
-  Users, 
-  MapPin,
-  PencilRuler,
-  Check,
-  Star,
-  Heart,
-  Clock
-} from 'lucide-react';
-import type { BudgetFormData, FormStep, WeddingStyle } from '../types/budget.types';
-import { coachTips, stylePreviewData } from '../types/budget.types';
+import { Checkbox } from '@/components/ui/checkbox';
+import { StepIndicator } from '@/components/ui/StepIndicator';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+import type {
+  BudgetFormData,
+  BudgetFormProps,
+} from '../types/budget.types';
+import { budgetFormSchema } from '../types/budget.types';
 import { budgetCategories } from '../utils/mockData';
 
-// Form validation schema
-const budgetFormSchema = z.object({
-  partnerNames: z.array(z.string()).min(1).max(2),
-  relationshipYears: z.number().optional(),
-  guestCount: z.number().min(10).max(1000),
-  location: z.string().min(2),
-  weddingDate: z.date().min(new Date()),
-  style: z.enum(['modern', 'rustic', 'classic', 'boho', 'vintage', 'outdoor']),
-  budgetRange: z.number().min(5000).max(200000),
-  priorities: z.array(z.string()).min(1).max(5)
-});
-
-interface BudgetFormProps {
-  initialData?: Partial<BudgetFormData>;
-  onSubmit: (data: BudgetFormData) => void;
-  currentStep: number;
-  onNextStep: () => void;
-  onPrevStep: () => void;
-  className?: string;
-}
-
-export function BudgetForm({ 
-  initialData, 
+export const BudgetForm: React.FC<BudgetFormProps> = ({
   onSubmit,
+  initialData,
   currentStep,
   onNextStep,
   onPrevStep,
-  className = '' 
-}: BudgetFormProps) {
-  // Default form data
-  const defaultData: BudgetFormData = {
-    partnerNames: ['', ''],
-    relationshipYears: 0,
-    guestCount: 100,
-    location: '',
-    weddingDate: new Date(new Date().setMonth(new Date().getMonth() + 12)), // Default to 1 year from now
-    style: 'classic',
-    budgetRange: 35000,
-    priorities: ['venue', 'catering', 'photography']
-  };
-
-  // Form steps
-  const steps: FormStep[] = [
-    {
-      id: 'personalInfo',
-      label: 'About You',
-      description: 'Names and relationship'
-    },
-    {
-      id: 'basics',
-      label: 'Basic Info',
-      description: 'Guest count and location'
-    },
-    {
-      id: 'details',
-      label: 'Wedding Details',
-      description: 'Date and style'
-    },
-    {
-      id: 'budget',
-      label: 'Budget & Priorities',
-      description: 'Budget range and top priorities'
-    }
-  ];
-
-  // Form state
-  const [formData, setFormData] = useState<BudgetFormData>({
-    ...defaultData,
-    ...initialData
+}) => {
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors, isValid },
+  } = useForm<BudgetFormData>({
+    resolver: zodResolver(budgetFormSchema),
+    defaultValues: initialData,
+    mode: 'onChange',
   });
   
-  // Form validation state
-  const [errors, setErrors] = useState<Partial<Record<keyof BudgetFormData, string>>>({});
+  const watchedPriorities = watch('priorities');
+  const budgetRange = watch('budgetRange');
   
-  // Wedding styles with descriptions
-  const weddingStyles: { id: WeddingStyle; name: string; description: string }[] = [
-    {
-      id: 'modern',
-      name: 'Modern',
-      description: 'Clean lines, minimalist design, contemporary venues'
-    },
-    {
-      id: 'rustic',
-      name: 'Rustic',
-      description: 'Barn venues, natural elements, relaxed atmosphere'
-    },
-    {
-      id: 'classic',
-      name: 'Classic',
-      description: 'Traditional venues, elegant decor, timeless elements'
-    },
-    {
-      id: 'boho',
-      name: 'Bohemian',
-      description: 'Free-spirited, eclectic decor, natural settings'
-    },
-    {
-      id: 'vintage',
-      name: 'Vintage',
-      description: 'Nostalgic elements, antique touches, romantic feel'
-    },
-    {
-      id: 'outdoor',
-      name: 'Outdoor',
-      description: 'Garden, beach, or park venues, natural surroundings'
-    }
-  ];
-
-  // Get all budget categories for priorities
-  const priorityCategories = budgetCategories.map((category: { id: string; name: string; description: string }) => ({
-    id: category.id,
-    name: category.name,
-    description: category.description
-  }));
-
-  // Update form data
-  const updateFormData = (field: keyof BudgetFormData, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    
-    // Clear error when field is updated
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: undefined
-      }));
+  const handleNext = () => {
+    if (currentStep < 4) {
+      onNextStep();
+    } else {
+      handleSubmit(onSubmit)();
     }
   };
-
-  // Update partner name
-  const updatePartnerName = (index: number, value: string) => {
-    setFormData(prev => {
-      const newPartnerNames = [...prev.partnerNames];
-      newPartnerNames[index] = value;
-      return {
-        ...prev,
-        partnerNames: newPartnerNames
-      };
-    });
-    
-    // Clear error when field is updated
-    if (errors.partnerNames) {
-      setErrors(prev => ({
-        ...prev,
-        partnerNames: undefined
-      }));
-    }
-  };
-
-  // Toggle priority selection
-  const togglePriority = (categoryId: string) => {
-    setFormData(prev => {
-      const currentPriorities = [...prev.priorities];
-      
-      if (currentPriorities.includes(categoryId)) {
-        return {
-          ...prev,
-          priorities: currentPriorities.filter(id => id !== categoryId)
-        };
-      } else {
-        // Max 5 priorities
-        if (currentPriorities.length < 5) {
-          return {
-            ...prev,
-            priorities: [...currentPriorities, categoryId]
-          };
-        }
-      }
-      
-      return prev;
-    });
-  };
-
-  // Validate current step
-  const validateStep = (): boolean => {
-    const newErrors: Partial<Record<keyof BudgetFormData, string>> = {};
-    
-    switch (currentStep) {
-      case 0: // Personal Info
-        if (!formData.partnerNames[0] && !formData.partnerNames[1]) {
-          newErrors.partnerNames = 'Please enter at least one name';
-        }
-        break;
-        
-      case 1: // Basic Info
-        if (!formData.guestCount || formData.guestCount < 10) {
-          newErrors.guestCount = 'Please enter at least 10 guests';
-        } else if (formData.guestCount > 1000) {
-          newErrors.guestCount = 'Maximum 1000 guests';
-        }
-        
-        if (!formData.location || formData.location.length < 2) {
-          newErrors.location = 'Please enter a valid location';
-        }
-        break;
-        
-      case 2: // Wedding Details
-        if (!formData.weddingDate) {
-          newErrors.weddingDate = 'Please select a wedding date';
-        } else if (formData.weddingDate < new Date()) {
-          newErrors.weddingDate = 'Wedding date must be in the future';
-        }
-        
-        if (!formData.style) {
-          newErrors.style = 'Please select a wedding style';
-        }
-        break;
-        
-      case 3: // Budget & Priorities
-        if (!formData.budgetRange || formData.budgetRange < 5000) {
-          newErrors.budgetRange = 'Minimum budget is $5,000';
-        } else if (formData.budgetRange > 200000) {
-          newErrors.budgetRange = 'Maximum budget is $200,000';
-        }
-        
-        if (!formData.priorities || formData.priorities.length === 0) {
-          newErrors.priorities = 'Please select at least one priority';
-        }
-        break;
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Handle next step
-  const handleNextStep = () => {
-    if (validateStep()) {
-      if (currentStep < steps.length - 1) {
-        onNextStep();
-      } else {
-        // Submit the form on the last step
-        handleSubmit();
-      }
-    }
-  };
-
-  // Handle previous step
-  const handlePrevStep = () => {
-    if (currentStep > 0) {
-      onPrevStep();
-    }
-  };
-
-  // Handle form submission
-  const handleSubmit = () => {
-    try {
-      // Validate the entire form
-      budgetFormSchema.parse(formData);
-      onSubmit(formData);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const fieldErrors: Partial<Record<keyof BudgetFormData, string>> = {};
-        
-        error.errors.forEach(err => {
-          const field = err.path[0] as keyof BudgetFormData;
-          fieldErrors[field] = err.message;
-        });
-        
-        setErrors(fieldErrors);
-      }
-    }
-  };
-
-  // Format currency values
-  const formatCurrency = (value: number) => {
+  
+  // Function to format the budget as currency
+  const formatBudget = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value);
   };
-
-  // Get current step ID
-  const currentStepId = steps[currentStep]?.id || '';
-
-  // Coach tip component
-  const CoachTip = ({ stepId }: { stepId: string }) => {
-    const tip = coachTips[stepId];
-    if (!tip) return null;
-    
-    return (
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="mt-6 p-3 bg-[hsla(var(--wedding-rose)/0.1)] rounded-lg"
-      >
-        <p className="text-sm text-[hsl(var(--wedding-navy))]">
-          {tip}
-        </p>
-      </motion.div>
-    );
-  };
-
-  // Style preview component
-  const StylePreview = ({ style }: { style: WeddingStyle }) => {
-    const preview = stylePreviewData[style];
-    if (!preview) return null;
-    
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="mt-4 p-4 rounded-lg border border-gray-200"
-      >
-        <h4 className="font-medium text-[hsl(var(--wedding-navy))] mb-2">
-          {style.charAt(0).toUpperCase() + style.slice(1)} Style Preview
-        </h4>
-        <p className="text-sm text-gray-600 mb-3">{preview.description}</p>
-        <div className="flex space-x-2 mb-3">
-          {preview.palette.map((color, index) => (
-            <div 
-              key={index}
-              className="w-8 h-8 rounded-full border border-gray-200"
-              style={{ backgroundColor: color }}
-            />
-          ))}
-        </div>
-      </motion.div>
-    );
-  };
-
-  // Animations
-  const pageVariants = {
-    initial: { opacity: 0, x: 100 },
-    in: { opacity: 1, x: 0 },
-    out: { opacity: 0, x: -100 }
-  };
-
+  
+  // Wedding styles with descriptions
+  const weddingStyles = [
+    { value: 'modern', label: 'Modern', description: 'Clean, minimalist, contemporary' },
+    { value: 'rustic', label: 'Rustic', description: 'Barn, countryside, natural elements' },
+    { value: 'classic', label: 'Classic', description: 'Timeless, elegant, traditional' },
+    { value: 'boho', label: 'Boho', description: 'Free-spirited, eclectic, whimsical' },
+    { value: 'vintage', label: 'Vintage', description: 'Retro, nostalgic, antique-inspired' },
+    { value: 'outdoor', label: 'Outdoor', description: 'Nature, garden, beach, woodland' },
+  ];
+  
   return (
-    <div className={`${className}`}>
-      {/* Step indicator */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          {steps.map((step, index) => (
-            <div 
-              key={step.id} 
-              className={`relative flex flex-col items-center ${
-                index < steps.length - 1 ? 'w-full' : ''
-              }`}
-            >
-              <div 
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  index <= currentStep 
-                    ? 'bg-[hsl(var(--wedding-rose))] text-white' 
-                    : 'bg-gray-200 text-gray-500'
-                }`}
-              >
-                {index < currentStep ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  <span>{index + 1}</span>
-                )}
-              </div>
-              
-              <div className="text-xs mt-2 text-center">
-                <div className={`font-medium ${
-                  index <= currentStep ? 'text-[hsl(var(--wedding-navy))]' : 'text-gray-500'
-                }`}>
-                  {step.label}
-                </div>
-                {step.description && (
-                  <div className={`${
-                    index <= currentStep ? 'text-gray-600' : 'text-gray-400'
-                  }`}>
-                    {step.description}
-                  </div>
-                )}
-              </div>
-              
-              {index < steps.length - 1 && (
-                <div 
-                  className={`absolute top-4 left-1/2 w-full h-0.5 ${
-                    index < currentStep ? 'bg-[hsl(var(--wedding-rose))]' : 'bg-gray-200'
-                  }`}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+    <div className="bg-white shadow-lg rounded-lg p-6 mb-10">
+      <StepIndicator
+        currentStep={currentStep - 1}
+        steps={[
+          { id: 1, label: 'Basics' },
+          { id: 2, label: 'Details' },
+          { id: 3, label: 'Style' },
+          { id: 4, label: 'Priorities' }
+        ]}
+        className="mb-8"
+      />
       
-      {/* Form content */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentStep}
-            initial="initial"
-            animate="in"
-            exit="out"
-            variants={pageVariants}
-            transition={{ type: 'tween', duration: 0.3 }}
-            className="min-h-[300px]"
-          >
-            {currentStep === 0 && (
-              <div>
-                <h3 className="text-xl font-wedding-serif text-[hsl(var(--wedding-navy))] mb-6">
-                  Hello! Who's planning a wedding? 💕
-                </h3>
-                
-                {/* Partner Names */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Your Names
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="relative">
-                      <Heart className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                      <Input
-                        type="text"
-                        value={formData.partnerNames[0]}
-                        onChange={(e) => updatePartnerName(0, e.target.value)}
-                        className={`pl-10 ${errors.partnerNames ? 'border-red-500' : ''}`}
-                        placeholder="Partner 1"
-                      />
-                    </div>
-                    <div className="relative">
-                      <Heart className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                      <Input
-                        type="text"
-                        value={formData.partnerNames[1]}
-                        onChange={(e) => updatePartnerName(1, e.target.value)}
-                        className={`pl-10 ${errors.partnerNames ? 'border-red-500' : ''}`}
-                        placeholder="Partner 2"
-                      />
-                    </div>
-                  </div>
-                  {errors.partnerNames && (
-                    <p className="mt-1 text-sm text-red-500">{errors.partnerNames}</p>
-                  )}
-                </div>
-                
-                {/* Relationship Years */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    How long have you been together? (optional)
-                  </label>
-                  <div className="relative">
-                    <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <Input
-                      type="number"
-                      min={0}
-                      max={100}
-                      value={formData.relationshipYears || ''}
-                      onChange={(e) => updateFormData('relationshipYears', parseInt(e.target.value) || 0)}
-                      className="pl-10"
-                      placeholder="Years"
-                    />
-                  </div>
-                  <p className="mt-1 text-xs text-gray-500">
-                    This helps us better understand your journey together.
-                  </p>
-                </div>
-                
-                {/* Coach Tip */}
-                <CoachTip stepId={currentStepId} />
-              </div>
-            )}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Step 1: Basic Information */}
+        {currentStep === 1 && (
+          <div className="space-y-6 py-4">
+            <h2 className="text-2xl font-serif font-semibold text-gray-800 mb-6">
+              Tell Us About Your Wedding
+            </h2>
             
-            {currentStep === 1 && (
-              <div>
-                <h3 className="text-xl font-wedding-serif text-[hsl(var(--wedding-navy))] mb-6">
-                  {formData.partnerNames.filter(Boolean).length > 0 
-                    ? `Now about your wedding, ${formData.partnerNames.filter(Boolean).join(' & ')}!`
-                    : "Let's start with the basics"}
-                </h3>
-                
-                {/* Guest Count */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    How many guests are you planning to invite?
-                  </label>
-                  <div className="relative">
-                    <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <Input
-                      type="number"
-                      min={10}
-                      max={1000}
-                      value={formData.guestCount}
-                      onChange={(e) => updateFormData('guestCount', parseInt(e.target.value) || '')}
-                      className={`pl-10 ${errors.guestCount ? 'border-red-500' : ''}`}
-                      placeholder="Number of guests"
-                    />
-                  </div>
-                  {errors.guestCount && (
-                    <p className="mt-1 text-sm text-red-500">{errors.guestCount}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Partner 1 Name
+                </label>
+                <Input
+                  {...register('partnerNames.0')}
+                  placeholder="Partner 1 Name"
+                  className={cn(
+                    'w-full',
+                    errors.partnerNames?.[0] && 'border-red-500'
                   )}
-                  <p className="mt-1 text-xs text-gray-500">
-                    Your guest count helps us estimate per-person costs for catering and other items.
-                  </p>
-                </div>
-                
-                {/* Location */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Where are you planning to have your wedding?
-                  </label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <Input
-                      type="text"
-                      value={formData.location}
-                      onChange={(e) => updateFormData('location', e.target.value)}
-                      className={`pl-10 ${errors.location ? 'border-red-500' : ''}`}
-                      placeholder="City, State (e.g., Seattle, WA)"
-                    />
-                  </div>
-                  {errors.location && (
-                    <p className="mt-1 text-sm text-red-500">{errors.location}</p>
-                  )}
-                  <p className="mt-1 text-xs text-gray-500">
-                    Regional pricing varies significantly. Be as specific as possible for accuracy.
-                  </p>
-                </div>
-                
-                {/* Coach Tip */}
-                <CoachTip stepId={currentStepId} />
+                />
               </div>
-            )}
-            
-            {currentStep === 2 && (
-              <div>
-                <h3 className="text-xl font-wedding-serif text-[hsl(var(--wedding-navy))] mb-6">
-                  Tell us about your wedding
-                </h3>
-                
-                {/* Wedding Date */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    When is your wedding date?
-                  </label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Partner 2 Name
+                </label>
+                <Input
+                  {...register('partnerNames.1')}
+                  placeholder="Partner 2 Name"
+                  className={cn(
+                    'w-full',
+                    errors.partnerNames?.[1] && 'border-red-500'
+                  )}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Wedding Date
+                </label>
+                <Controller
+                  control={control}
+                  name="weddingDate"
+                  render={({ field }: { field: any }) => (
                     <Input
                       type="date"
-                      value={formData.weddingDate.toISOString().split('T')[0]}
-                      onChange={(e) => updateFormData('weddingDate', new Date(e.target.value))}
-                      className={`pl-10 ${errors.weddingDate ? 'border-red-500' : ''}`}
+                      onChange={(e) => field.onChange(new Date(e.target.value))}
+                      value={field.value ? field.value.toISOString().split('T')[0] : ''}
+                      className={cn(
+                        'w-full',
+                        errors.weddingDate && 'border-red-500'
+                      )}
                     />
-                  </div>
-                  {errors.weddingDate && (
-                    <p className="mt-1 text-sm text-red-500">{errors.weddingDate}</p>
                   )}
-                  <p className="mt-1 text-xs text-gray-500">
-                    Seasonal pricing may affect your budget. Peak season typically costs more.
+                />
+                {errors.weddingDate && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.weddingDate.message}
                   </p>
-                </div>
-                
-                {/* Wedding Style */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    What's your wedding style?
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Guest Count
+                </label>
+                <Controller
+                  control={control}
+                  name="guestCount"
+                  render={({ field }: { field: any }) => (
+                    <Input
+                      type="number"
+                      min="10"
+                      max="1000"
+                      onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+                      value={field.value}
+                      className={cn(
+                        'w-full',
+                        errors.guestCount && 'border-red-500'
+                      )}
+                    />
+                  )}
+                />
+                {errors.guestCount && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.guestCount.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Step 2: Location and Budget */}
+        {currentStep === 2 && (
+          <div className="space-y-6 py-4">
+            <h2 className="text-2xl font-serif font-semibold text-gray-800 mb-6">
+              Location & Budget
+            </h2>
+            
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Wedding Location
+                </label>
+                <Input
+                  {...register('location')}
+                  placeholder="City, State or Region"
+                  className={cn(
+                    'w-full',
+                    errors.location && 'border-red-500'
+                  )}
+                />
+                {errors.location && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.location.message}
+                  </p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Total Budget
                   </label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {weddingStyles.map(style => (
+                  <span className="text-lg font-medium text-indigo-600">
+                    {formatBudget(budgetRange)}
+                  </span>
+                </div>
+                <Controller
+                  control={control}
+                  name="budgetRange"
+                  render={({ field }: { field: any }) => (
+                    <Input
+                      type="range"
+                      min="5000"
+                      max="200000"
+                      step="1000"
+                      onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+                      value={field.value}
+                      className="w-full accent-indigo-600"
+                    />
+                  )}
+                />
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>$5,000</span>
+                  <span>$200,000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Step 3: Wedding Style */}
+        {currentStep === 3 && (
+          <div className="space-y-6 py-4">
+            <h2 className="text-2xl font-serif font-semibold text-gray-800 mb-6">
+              Wedding Style
+            </h2>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select your wedding style
+              </label>
+              
+              <Controller
+                control={control}
+                name="style"
+                render={({ field }: { field: any }) => (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {weddingStyles.map((style) => (
                       <div
-                        key={style.id}
-                        className={`border rounded-lg p-3 cursor-pointer transition-all ${
-                          formData.style === style.id
-                            ? 'border-[hsl(var(--wedding-rose))] bg-[hsla(var(--wedding-rose)/0.05)]'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                        onClick={() => updateFormData('style', style.id)}
+                        key={style.value}
+                        className={cn(
+                          "border rounded-lg p-4 cursor-pointer transition-colors",
+                          field.value === style.value
+                            ? "border-indigo-500 bg-indigo-50"
+                            : "border-gray-200 hover:border-indigo-300"
+                        )}
+                        onClick={() => field.onChange(style.value)}
                       >
-                        <div className="flex justify-between items-start">
-                          <span className="font-medium">{style.name}</span>
-                          {formData.style === style.id && (
-                            <span className="text-[hsl(var(--wedding-rose))]">
-                              <Check className="w-4 h-4" />
-                            </span>
-                          )}
+                        <div className="flex items-start">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-medium text-gray-800">
+                              {style.label}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              {style.description}
+                            </p>
+                          </div>
+                          <div className="flex items-center justify-center h-5 w-5">
+                            {field.value === style.value && (
+                              <div className="h-3 w-3 bg-indigo-600 rounded-full"></div>
+                            )}
+                          </div>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">{style.description}</p>
                       </div>
                     ))}
                   </div>
-                  {errors.style && (
-                    <p className="mt-1 text-sm text-red-500">{errors.style}</p>
-                  )}
-                </div>
-                
-                {/* Style Preview */}
-                {formData.style && <StylePreview style={formData.style} />}
-                
-                {/* Coach Tip */}
-                <CoachTip stepId={currentStepId} />
-              </div>
-            )}
+                )}
+              />
+            </div>
+          </div>
+        )}
+        
+        {/* Step 4: Priorities */}
+        {currentStep === 4 && (
+          <div className="space-y-6 py-4">
+            <h2 className="text-2xl font-serif font-semibold text-gray-800 mb-6">
+              Wedding Priorities
+            </h2>
             
-            {currentStep === 3 && (
-              <div>
-                <h3 className="text-xl font-wedding-serif text-[hsl(var(--wedding-navy))] mb-6">
-                  Set your budget and priorities
-                </h3>
-                
-                {/* Budget Range */}
-                <div className="mb-8">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    What's your total wedding budget?
-                  </label>
-                  <div>
-                    <input
-                      type="range"
-                      min={5000}
-                      max={200000}
-                      step={1000}
-                      value={formData.budgetRange}
-                      onChange={(e) => updateFormData('budgetRange', parseInt(e.target.value))}
-                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select your top priorities (up to 5)
+              </label>
+              <p className="text-sm text-gray-600 mb-4">
+                These will receive higher budget allocations in your personalized plan.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {budgetCategories.map((category) => (
+                  <div
+                    key={category.id}
+                    className={cn(
+                      "flex items-center space-x-3 rounded-md border p-3 shadow-sm",
+                      watchedPriorities.includes(category.id)
+                        ? "border-indigo-500 bg-indigo-50"
+                        : "border-gray-200"
+                    )}
+                  >
+                    <Controller
+                      control={control}
+                      name="priorities"
+                      render={({ field }: { field: any }) => (
+                        <Checkbox
+                          checked={field.value.includes(category.id)}
+                          onCheckedChange={(checked) => {
+                            const currentPriorities = [...field.value];
+                            
+                            if (checked) {
+                              if (currentPriorities.length < 5) {
+                                currentPriorities.push(category.id);
+                              }
+                            } else {
+                              const index = currentPriorities.indexOf(category.id);
+                              if (index !== -1) {
+                                currentPriorities.splice(index, 1);
+                              }
+                            }
+                            
+                            field.onChange(currentPriorities);
+                          }}
+                          disabled={
+                            !field.value.includes(category.id) &&
+                            field.value.length >= 5
+                          }
+                        />
+                      )}
                     />
-                    <div className="flex justify-between mt-2">
-                      <span className="text-xs text-gray-500">$5,000</span>
-                      <span className="text-lg font-medium text-[hsl(var(--wedding-navy))]">
-                        {formatCurrency(formData.budgetRange)}
-                      </span>
-                      <span className="text-xs text-gray-500">$200,000</span>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-medium">{category.name}</h3>
+                      <p className="text-xs text-gray-500">
+                        {category.description.split(",")[0]}
+                      </p>
                     </div>
                   </div>
-                  {errors.budgetRange && (
-                    <p className="mt-1 text-sm text-red-500">{errors.budgetRange}</p>
-                  )}
-                  <p className="mt-1 text-xs text-gray-500">
-                    Adjust the slider to set your total wedding budget.
-                  </p>
-                </div>
-                
-                {/* Priorities */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Select your top priorities (max 5)
-                  </label>
-                  <p className="text-xs text-gray-500 mb-3">
-                    We'll allocate more of your budget to these categories.
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {priorityCategories.map((category: { id: string; name: string; description: string }) => (
-                      <div
-                        key={category.id}
-                        className={`border rounded-lg p-2 cursor-pointer transition-all ${
-                          formData.priorities.includes(category.id)
-                            ? 'border-[hsl(var(--wedding-rose))] bg-[hsla(var(--wedding-rose)/0.05)]'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                        onClick={() => togglePriority(category.id)}
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium text-sm">{category.name}</span>
-                          {formData.priorities.includes(category.id) && (
-                            <Star className="w-4 h-4 fill-[hsl(var(--wedding-gold))] text-[hsl(var(--wedding-gold))]" />
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {errors.priorities && (
-                    <p className="mt-1 text-sm text-red-500">{errors.priorities}</p>
-                  )}
-                </div>
-                
-                {/* Coach Tip */}
-                <CoachTip stepId={currentStepId} />
+                ))}
               </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-      
-      {/* Navigation buttons */}
-      <div className="mt-8 flex justify-between">
-        <Button
-          variant="outline"
-          onClick={handlePrevStep}
-          disabled={currentStep === 0}
-          className={currentStep === 0 ? 'invisible' : ''}
-        >
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Previous
-        </Button>
+              
+              {errors.priorities && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.priorities.message}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
         
-        <Button
-          onClick={handleNextStep}
-          className="bg-[hsl(var(--wedding-rose))] hover:bg-[hsl(var(--wedding-rose-dark))] text-white"
-        >
-          {currentStep < steps.length - 1 ? (
-            <>
-              Next
-              <ChevronRight className="ml-2 h-4 w-4" />
-            </>
-          ) : (
-            'Calculate My Budget'
-          )}
-        </Button>
-      </div>
+        {/* Navigation buttons */}
+        <div className="flex justify-between pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onPrevStep}
+            disabled={currentStep === 1}
+          >
+            Previous
+          </Button>
+          
+          <Button
+            type="button"
+            onClick={handleNext}
+            disabled={currentStep === 4 && watchedPriorities.length === 0}
+          >
+            {currentStep < 4 ? 'Next' : 'Calculate Budget'}
+          </Button>
+        </div>
+      </form>
     </div>
   );
-}
+};

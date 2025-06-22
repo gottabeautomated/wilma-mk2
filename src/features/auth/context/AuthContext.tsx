@@ -1,6 +1,6 @@
 import * as React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
-import { User, Session } from "@supabase/supabase-js"
+import type { User, Session } from "@supabase/supabase-js"
 import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/use-toast"
 

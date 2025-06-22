@@ -1,151 +1,142 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { CheckCircle, Mail, Lock } from "lucide-react";
-import { supabase, handleSupabaseError } from "@/lib/supabase";
-import { useToast } from "@/hooks/use-toast";
-import type { EmailCaptureModalProps, BudgetFormData } from "../types/budget.types";
+import React, { useState } from 'react';
+import type { EmailCaptureModalProps } from '../types/budget.types';
+import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
-export function EmailCaptureModal({ 
-  isOpen, 
-  onSubmit, 
+export const EmailCaptureModal: React.FC<EmailCaptureModalProps> = ({
+  isOpen,
+  onSubmit,
   onSkip,
-  formData 
-}: EmailCaptureModalProps) {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  formData
+}) => {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-  
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (error) setError(null);
+  };
+
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email.toLowerCase());
+    return re.test(email);
   };
-  
-  const handleSubmit = async () => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
     if (!email) {
-      setError("Please enter your email address");
+      setError('Please enter your email address');
       return;
     }
     
     if (!validateEmail(email)) {
-      setError("Please enter a valid email address");
+      setError('Please enter a valid email address');
       return;
     }
     
-    setSubmitting(true);
+    setIsSubmitting(true);
     
     try {
-      // Save email to Supabase
-      const { error: supabaseError } = await supabase
-        .from('email_captures')
-        .insert({
-          email,
-          source: 'budget_calculator',
-          metadata: {
-            wedding_date: formData.weddingDate,
-            guest_count: formData.guestCount,
-            location: formData.location,
-            style: formData.style,
-            budget_range: formData.budgetRange
-          }
-        });
-      
-      if (supabaseError) {
-        const errorMessage = handleSupabaseError(supabaseError);
-        console.error('Error saving email:', errorMessage);
-        // Continue anyway to show results
-      } else {
-        // Log success but don't show to user
-        console.log('Email saved successfully to Supabase');
-      }
-      
-      // Continue with normal flow
-      onSubmit(email);
+      await onSubmit(email);
+      toast({
+        title: 'Email Captured',
+        description: 'Thank you! Your budget results are ready.',
+      });
     } catch (error) {
-      console.error('Error in email capture process:', error);
-      // Continue anyway to show results
+      console.error('Failed to capture email:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to save your email. Please try again.',
+        variant: 'destructive',
+      });
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
-  
-  if (!isOpen) return null;
-  
-  // Get wedding names if available
-  const coupleNames = formData.partnerNames.filter(Boolean).join(" & ");
-  
+
+  const handleSkip = () => {
+    onSkip();
+    toast({
+      title: 'Continuing without email',
+      description: 'You can always save your results later.',
+    });
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 max-w-md mx-auto"
-    >
-      <div className="text-center mb-6">
-        <div className="w-16 h-16 bg-[hsla(var(--wedding-rose)/0.1)] rounded-full flex items-center justify-center mx-auto mb-4">
-          <CheckCircle className="w-8 h-8 text-[hsl(var(--wedding-rose))]" />
+    <Sheet open={isOpen} onOpenChange={() => {}}>
+      <SheetContent side="bottom" className="sm:max-w-lg sm:mx-auto rounded-t-xl">
+        <div className="max-h-[85vh] overflow-y-auto py-6">
+          <SheetHeader className="text-center mb-6">
+            <SheetTitle className="text-2xl font-serif text-gray-800">
+              Your Budget Results Are Ready!
+            </SheetTitle>
+            <SheetDescription>
+              Enter your email to view your personalized wedding budget breakdown
+            </SheetDescription>
+          </SheetHeader>
+          
+          <div className="space-y-6">
+            <div className="bg-blue-50 p-4 rounded-lg text-center">
+              <h3 className="font-medium text-blue-800 mb-2">
+                Here's what you'll get:
+              </h3>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• Complete budget breakdown for your {formData.style} wedding</li>
+                <li>• Cost estimates for {formData.guestCount} guests in {formData.location}</li>
+                <li>• AI-powered saving recommendations</li>
+                <li>• Ability to export and save your budget plan</li>
+              </ul>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email Address
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="youremail@example.com"
+                  value={email}
+                  onChange={handleEmailChange}
+                  className={error ? 'border-red-300' : ''}
+                />
+                {error && (
+                  <p className="mt-1 text-sm text-red-600">{error}</p>
+                )}
+                <p className="mt-2 text-xs text-gray-500">
+                  We'll never share your email with anyone else. You'll receive a copy of your 
+                  wedding budget breakdown and occasional wedding planning tips.
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <Button
+                  type="submit"
+                  className="flex-1"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Submitting...' : 'View My Budget Results'}
+                </Button>
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleSkip}
+                  disabled={isSubmitting}
+                >
+                  Skip for Now
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
-        
-        <h3 className="text-xl font-wedding-serif text-[hsl(var(--wedding-navy))] mb-2">
-          Your Budget is Ready!
-        </h3>
-        
-        <p className="text-gray-600 mb-2">
-          {coupleNames ? 
-            `We've created a personalized budget for ${coupleNames}'s wedding.` : 
-            "We've created your personalized wedding budget."
-          }
-        </p>
-        
-        <p className="text-sm text-gray-500">
-          Enter your email to see your results and get a copy delivered to your inbox.
-        </p>
-      </div>
-      
-      <div className="mb-6">
-        <div className="relative">
-          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <Input 
-            type="email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setError("");
-            }}
-            placeholder="Your email address"
-            className={`pl-10 ${error ? 'border-red-500' : ''}`}
-          />
-        </div>
-        {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-        
-        <div className="flex items-center text-xs text-gray-500 mt-2">
-          <Lock className="w-3 h-3 mr-1" />
-          <span>We respect your privacy and will never spam you</span>
-        </div>
-      </div>
-      
-      <div className="space-y-3">
-        <Button
-          onClick={handleSubmit}
-          disabled={submitting}
-          className="w-full bg-[hsl(var(--wedding-rose))] hover:bg-[hsl(var(--wedding-rose-dark))] text-white"
-        >
-          {submitting ? "Submitting..." : "View My Budget Results"}
-        </Button>
-        
-        <Button
-          onClick={onSkip}
-          variant="outline"
-          className="w-full text-gray-500"
-        >
-          Skip for now
-        </Button>
-      </div>
-      
-      <div className="text-xs text-gray-400 text-center mt-4">
-        By continuing, you agree to our Terms of Service and Privacy Policy.
-      </div>
-    </motion.div>
+      </SheetContent>
+    </Sheet>
   );
-}
+};

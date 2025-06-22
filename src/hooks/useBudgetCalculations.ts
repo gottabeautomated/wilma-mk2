@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getBudgetCalculations, saveBudgetCalculation, updateBudgetCalculation, deleteBudgetCalculation, BudgetCalculation } from '@/lib/api/budget'
+import { getBudgetCalculations, saveBudgetCalculation, updateBudgetCalculation, deleteBudgetCalculation } from '@/lib/api/budget'
+import type { BudgetCalculation } from '@/lib/api/budget'
 import { useToast } from '@/hooks/use-toast'
 import { generateUniqueId } from '@/lib/utils'
 
