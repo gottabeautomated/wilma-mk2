@@ -3,9 +3,9 @@
   "name": "Wilma Mk2 - Wedding Planning Platform",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "wilma-favicon.svg",
       "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "type": "image/svg+xml"
     },
     {
       "src": "logo192.png",
