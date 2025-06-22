@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import { BrainCircuit, BarChart, Heart, ArrowRight, Flame, Coffee, Zap, Moon, CheckCircle2, Save } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 

@@ -5,7 +5,7 @@ import { ToastAction } from "@/components/ui/toast"
 type ToastActionElement = React.ReactElement<typeof ToastAction>
 
 const TOAST_LIMIT = 5
-const TOAST_REMOVE_DELAY = 1000000
+// TOAST_REMOVE_DELAY removed as it was unused
 
 type ToasterToast = ToastProps & {
   id: string

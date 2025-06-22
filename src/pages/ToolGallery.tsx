@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Calculator, Calendar, Users, Building2, BrainCircuit, ArrowRight } from 'lucide-react'
+import { Calculator, Calendar, Users, Building2, BrainCircuit } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { ToolCard } from '@/components/ui/ToolCard'
 

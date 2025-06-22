@@ -17,7 +17,7 @@ interface VenueReview {
 }
 
 export function VenueAnalyzer() {
-  const [venues, setVenues] = useState<VenueReview[]>([
+  const [venues] = useState<VenueReview[]>([
     {
       id: '1',
       venue: 'Grand Ballroom',
@@ -101,10 +101,7 @@ export function VenueAnalyzer() {
   
   const venuesToCompare = venues.filter(venue => comparedVenues.includes(venue.id))
   
-  const formatPrice = (priceRange: string) => {
-    return priceRange.length
-  }
-  
+
   return (
     <div className="wedding-section">
       <div className="max-w-6xl mx-auto">

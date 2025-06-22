@@ -199,7 +199,7 @@ export function TimelineGenerator() {
                 
                 {timelineItems
                   .sort((a, b) => a.time.localeCompare(b.time))
-                  .map((item, index) => (
+                  .map((item) => (
                     <div key={item.id} className="relative flex">
                       <div className="flex flex-col items-center mr-4">
                         <div className="h-12 w-12 rounded-full bg-[hsl(var(--wedding-rose))] text-white flex items-center justify-center">
