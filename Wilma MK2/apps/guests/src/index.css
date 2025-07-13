@@ -1,0 +1,326 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-gold: #D4AF37;
+    --color-gold-light: #F4E4A6;
+    --color-gold-dark: #B8941F;
+    --color-moss: #6B7F5B;
+    --color-moss-light: #8FA584;
+    --color-moss-dark: #4A5A41;
+    --color-royal: #6B46C1;
+    --color-royal-light: #8B5CF6;
+    --color-royal-dark: #553C9A;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #F9F3F0;
+    min-height: 100vh;
+    color: #353535;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    color: #353535;
+    font-weight: 600;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-champagne text-graphite px-6 py-3 rounded-elegant font-medium hover:bg-accent hover:text-white transition-all duration-300 shadow-elegant hover:shadow-elegant-lg transform hover:-translate-y-0.5;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-accent border-2 border-accent px-6 py-3 rounded-elegant font-medium hover:bg-accent hover:text-white transition-all duration-300 shadow-elegant;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-champagne text-accent px-6 py-3 rounded-elegant font-medium hover:bg-champagne hover:text-graphite transition-all duration-300;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-elegant border border-gray-100 overflow-hidden;
+  }
+  
+  .card-elegant {
+    @apply bg-white/90 backdrop-blur-sm rounded-elegant-lg shadow-elegant border border-undertone p-6 hover:shadow-gold transition-all duration-300;
+  }
+  
+  .card-elegant:hover {
+    box-shadow: 0 8px 32px rgba(212, 175, 55, 0.25);
+    border-color: rgba(212, 175, 55, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  .input-elegant {
+    @apply w-full px-4 py-3 border border-undertone rounded-elegant bg-white/80 text-graphite placeholder-accent/60 transition-all duration-200;
+  }
+  
+  .input-elegant:focus {
+    outline: none;
+    border-color: var(--color-royal);
+    box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.15), 0 0 0 1px var(--color-royal);
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+  
+  /* Royal Purple Focus Styles for all form elements */
+  input:focus,
+  textarea:focus,
+  select:focus,
+  .focus-royal:focus {
+    outline: none !important;
+    border-color: var(--color-royal) !important;
+    box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.15), 0 0 0 1px var(--color-royal) !important;
+  }
+  
+  /* Royal Purple Focus for Cards and Buttons */
+  .card-elegant:focus,
+  .card-elegant:focus-within {
+    border-color: var(--color-royal) !important;
+    box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.15), 0 8px 32px rgba(107, 70, 193, 0.25) !important;
+  }
+  
+  button:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.15) !important;
+  }
+  
+  .section-elegant {
+    @apply bg-white/60 backdrop-blur-md rounded-elegant-xl shadow-elegant-lg border border-white/30 p-8;
+  }
+  
+  .gradient-text-elegant {
+    @apply text-accent;
+  }
+  
+  .floating-elements {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .elegant-element {
+    position: absolute;
+    opacity: 0.03;
+    animation: gentle-float 6s ease-in-out infinite;
+    color: #9D7D6A;
+  }
+  
+  .elegant-element:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+  .elegant-element:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
+  .elegant-element:nth-child(3) { top: 60%; left: 20%; animation-delay: 2s; }
+  .elegant-element:nth-child(4) { bottom: 20%; right: 10%; animation-delay: 3s; }
+  .elegant-element:nth-child(5) { bottom: 40%; left: 80%; animation-delay: 4s; }
+  
+  .gradient-text {
+    @apply text-royal;
+  }
+  
+  .seating-chart-container {
+    @apply relative bg-white rounded-xl border border-undertone overflow-hidden;
+  }
+  
+  .draggable-table {
+    @apply cursor-move transition-all duration-200 hover:shadow-lg;
+  }
+  
+  .draggable-table.dragging {
+    @apply scale-105 shadow-2xl z-50;
+  }
+  
+  .guest-avatar {
+    @apply w-8 h-8 rounded-full border-2 border-white shadow-md bg-champagne flex items-center justify-center text-sm font-medium;
+  }
+  
+  .table-shape {
+    @apply transition-all duration-300 hover:shadow-lg;
+  }
+  
+  .table-shape.selected {
+    @apply shadow-xl ring-2 ring-royal;
+  }
+  
+  .ai-suggestion {
+    @apply bg-softrose border border-royal/20 rounded-lg p-4 relative overflow-hidden;
+  }
+  
+  .ai-suggestion::before {
+    content: '';
+    @apply absolute inset-0 bg-royal/10 opacity-0 transition-opacity duration-300;
+  }
+  
+  .ai-suggestion:hover::before {
+    @apply opacity-100;
+  }
+  
+  .venue-editor {
+    @apply bg-white rounded-xl border border-undertone relative overflow-hidden;
+  }
+  
+  .venue-grid {
+    background-image: 
+      linear-gradient(rgba(113, 113, 122, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(113, 113, 122, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  .photo-upload-zone {
+    @apply border-2 border-dashed border-undertone rounded-xl p-8 text-center transition-all duration-300 hover:border-royal hover:bg-softrose/50;
+  }
+  
+  .photo-upload-zone.drag-over {
+    @apply border-royal bg-softrose scale-105;
+  }
+  
+  .relationship-connection {
+    @apply stroke-undertone stroke-2 stroke-dasharray fill-none opacity-60 transition-all duration-300;
+  }
+  
+  .relationship-connection:hover {
+    @apply stroke-royal opacity-100;
+  }
+  
+  .toast-success {
+    @apply bg-green-50 border-green-200 text-green-800;
+  }
+  
+  .toast-error {
+    @apply bg-red-50 border-red-200 text-red-800;
+  }
+  
+  .toast-warning {
+    @apply bg-yellow-50 border-yellow-200 text-yellow-800;
+  }
+  
+  .toast-info {
+    @apply bg-blue-50 border-blue-200 text-blue-800;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .bg-pattern {
+    background-image: 
+      radial-gradient(circle at 1px 1px, rgba(244, 63, 94, 0.1) 1px, transparent 0);
+    background-size: 20px 20px;
+  }
+  
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+  
+  .animation-delay-800 {
+    animation-delay: 800ms;
+  }
+  
+  .animation-delay-1000 {
+    animation-delay: 1000ms;
+  }
+  
+  .text-elegant-gradient {
+    @apply bg-gradient-to-r from-accent to-champagne bg-clip-text text-transparent;
+  }
+  
+  .glass-elegant {
+    @apply bg-white/20 backdrop-blur-md border border-white/30;
+  }
+  
+  .shadow-golden {
+    box-shadow: 0 2px 8px rgba(157, 125, 106, 0.15);
+  }
+  
+  .shadow-royal {
+    box-shadow: 0 4px 16px rgba(107, 70, 193, 0.2);
+  }
+  
+  .shadow-royal-lg {
+    box-shadow: 0 8px 32px rgba(107, 70, 193, 0.3);
+  }
+  
+  .shadow-gold {
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.15);
+  }
+  
+  .shadow-moss {
+    box-shadow: 0 4px 16px rgba(107, 127, 91, 0.15);
+  }
+  
+  .elegant-divider {
+    @apply w-24 h-0.5 bg-gradient-to-r from-transparent via-champagne to-transparent mx-auto my-8;
+  }
+  
+  .royal-gradient {
+    @apply bg-royal;
+  }
+  
+  .royal-gradient-text {
+    @apply text-royal;
+  }
+  
+  .gold-gradient {
+    @apply bg-gold;
+  }
+  
+  .moss-gradient {
+    @apply bg-moss;
+  }
+  
+  .elegant-multi-gradient {
+    @apply bg-accent;
+  }
+  
+  .accent-gold {
+    @apply bg-gold text-white;
+  }
+  
+  .accent-moss {
+    @apply bg-moss text-white;
+  }
+  
+  .accent-royal {
+    @apply bg-royal text-white;
+  }
+  
+  .elegant-hover {
+    @apply transition-all duration-300 hover:shadow-elegant-lg hover:scale-105;
+  }
+  
+  .elegant-hover:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  .elegant-icon-hover {
+    @apply transition-all duration-200 hover:text-royal;
+  }
+  
+  .elegant-icon-hover:hover {
+    transform: scale(1.1);
+    color: var(--color-royal);
+  }
+} 

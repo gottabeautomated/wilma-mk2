@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import '../../../../packages/ui/src/index.css';
+
+@layer base {
+  html {
+    font-family: system-ui, sans-serif;
+  }
+}
+
+/* Wilma Custom Animations & Hero Background */
+.hero-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url('/heart_bg_wilma_mk2.png');
+  background-size: cover;
+  background-position: center;
+  filter: blur(4px);
+  opacity: 0.5;
+  animation: float 20s ease-in-out infinite;
+  z-index: 0;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+.scroll-reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s cubic-bezier(.4,0,.2,1); }
+.scroll-reveal.revealed { opacity: 1; transform: translateY(0); }
+.animate-slideDown { animation: slideDown 1s ease-out; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+.animate-slideUp { animation: slideUp 1s ease-out 0.2s both; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fadeIn { animation: fadeIn 1s ease-out 0.4s both; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.text-gradient-gold {
+  background: linear-gradient(90deg, #FFD700 0%, #E5C100 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.budget-card-bg {
+  background-image: url('/Budget_planer_bg.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.15;
+}
+
+.venue-card-bg {
+  background-image: url('/venue_analyzer_bg.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.15;
+}
+
+.timeline-card-bg {
+  background-image: url('/timeline_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.15;
+}
+
+.wellness-card-bg {
+  background-image: url('/wellness_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.15;
+}
+
+.guest-card-bg {
+  background-image: url('/guest_organizer_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.15;
+}
+
+.analytics-card-bg {
+  background-image: url('/analytic_dashboard_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.15;
+} 

@@ -1,0 +1,22 @@
+{
+  "name": "@wilma/auth",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint . --max-warnings 0",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.5",
+    "@wilma/database": "file:../database"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  }
+} 

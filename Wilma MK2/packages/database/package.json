@@ -1,0 +1,22 @@
+{
+  "name": "@wilma/database",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint . --max-warnings 0",
+    "type-check": "tsc --noEmit",
+    "gen:types": "npx supabase gen types typescript --project-id pyqooruoylfvrzbbxglp src/types/supabase.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  }
+} 

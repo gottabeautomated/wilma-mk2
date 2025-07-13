@@ -1,0 +1,31 @@
+{
+  "name": "wilma-mk2-ecosystem",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "type-check": "turbo run type-check"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "turbo": "^1.11.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.1",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.1",
+    "openai": "^5.8.2"
+  }
+}

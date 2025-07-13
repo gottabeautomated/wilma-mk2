@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/heart_bg_wilma_mk2.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wilma Gäste-Manager - Sitzordnung perfekt gemacht</title>
+    <meta name="description" content="Erstelle mit Wilma die perfekte Sitzordnung für deine Hochzeit. AI-optimiert, intuitiv und wunderschön." />
+    <meta name="keywords" content="Hochzeit, Sitzordnung, Gäste, AI, Wilma, Hochzeitsplaner" />
+    <meta name="theme-color" content="#ea4dff" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://wilma.wedding/guests" />
+    <meta property="og:title" content="Wilma Gäste-Manager - Sitzordnung perfekt gemacht" />
+    <meta property="og:description" content="Erstelle mit Wilma die perfekte Sitzordnung für deine Hochzeit. AI-optimiert, intuitiv und wunderschön." />
+    <meta property="og:image" content="/heart_bg_wilma_mk2.png" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://wilma.wedding/guests" />
+    <meta property="twitter:title" content="Wilma Gäste-Manager - Sitzordnung perfekt gemacht" />
+    <meta property="twitter:description" content="Erstelle mit Wilma die perfekte Sitzordnung für deine Hochzeit. AI-optimiert, intuitiv und wunderschön." />
+    <meta property="twitter:image" content="/heart_bg_wilma_mk2.png" />
+    
+    <style>
+      /* Loading animation */
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #ea4dff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .loading-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #fef7ff 0%, #fff1f2 100%);
+        font-family: 'Inter', sans-serif;
+      }
+      
+      .loading-text {
+        margin-top: 20px;
+        color: #71717a;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Wilma wird geladen...</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html> 

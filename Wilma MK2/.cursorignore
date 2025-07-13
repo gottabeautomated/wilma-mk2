@@ -1,0 +1,29 @@
+# Add directories or file patterns to ignore during indexing (e.g. foo/ or *.csv)
+# Dependencies
+node_modules/
+.npm
+.yarn
+
+# Build outputs
+dist/
+build/
+.next/
+.nuxt/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files (außer deinen eigenen)
+.vscode/
+.idea/
+
+# Temporary files
+.tmp/
+.cache/
+
+# Aber NICHT .env.local - das soll Cursor lesen können!
