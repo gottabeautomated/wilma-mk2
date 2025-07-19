@@ -1,0 +1,212 @@
+flowchart TD
+    %% Entry Points
+    Start([User Lands on Wilma]) --> Entry{Entry Point}
+    Entry -->|SEO/Direct| Landing[Landing Page]
+    Entry -->|Social Media| SocialTool[Tool from Social]
+    Entry -->|Ads| AdLanding[Ad Landing Page]
+    Entry -->|Partner Site| PartnerTool[Partner Tool Widget]
+
+    %% Landing Page Flow
+    Landing --> LandingChoice{Choose Action}
+    LandingChoice -->|Browse Tools| ToolGallery[Tool Gallery]
+    LandingChoice -->|Specific Tool| DirectTool[Direct to Tool]
+    LandingChoice -->|Sign Up| Signup[Account Creation]
+
+    %% Tool Gallery
+    ToolGallery --> ToolSelect{Select Tool}
+    ToolSelect -->|Budget| BudgetTool[Budget Calculator]
+    ToolSelect -->|Timeline| TimelineTool[Timeline Generator]
+    ToolSelect -->|Guests| GuestTool[Guest Manager]
+    ToolSelect -->|Venue| VenueTool[Venue Analyzer]
+    ToolSelect -->|Wellness| StressTool[Stress Planner]
+
+    %% Budget Calculator Flow
+    BudgetTool --> BudgetInput[Enter Wedding Details]
+    BudgetInput --> BudgetValid{Input Valid?}
+    BudgetValid -->|No| BudgetError[Show Validation Errors]
+    BudgetError --> BudgetInput
+    BudgetValid -->|Yes| BudgetAI[AI Processing]
+    BudgetAI --> BudgetResults[Show Results & Recommendations]
+    
+    BudgetResults --> BudgetAction{User Action}
+    BudgetAction -->|Export PDF| BudgetPDF[Generate PDF]
+    BudgetAction -->|Email Results| BudgetEmail[Email Capture Form]
+    BudgetAction -->|Save to Account| BudgetSave[Require Login/Signup]
+    BudgetAction -->|Try Another Tool| ToolCrossPromo[Cross-promote Tools]
+    BudgetAction -->|Refine Results| BudgetInput
+
+    %% Timeline Generator Flow
+    TimelineTool --> TimelineInput[Enter Wedding & Planning Details]
+    TimelineInput --> TimelineValid{Input Valid?}
+    TimelineValid -->|No| TimelineError[Show Validation Errors]
+    TimelineError --> TimelineInput
+    TimelineValid -->|Yes| TimelineAI[AI Timeline Generation]
+    TimelineAI --> TimelineResults[Show Interactive Timeline]
+    
+    TimelineResults --> TimelineAction{User Action}
+    TimelineAction -->|Customize Timeline| TimelineEdit[Edit Timeline Items]
+    TimelineAction -->|Export Calendar| TimelineExport[Calendar Integration]
+    TimelineAction -->|Email Timeline| TimelineEmailCapture[Email Capture]
+    TimelineAction -->|Save Timeline| TimelineSave[Require Login/Signup]
+    TimelineAction -->|Check Budget Tool| ToolCrossPromo
+
+    %% Guest Manager Flow
+    GuestTool --> GuestInput[Upload/Enter Guest Data]
+    GuestInput --> GuestValid{Data Valid?}
+    GuestValid -->|No| GuestError[Show Import Errors]
+    GuestError --> GuestInput
+    GuestValid -->|Yes| GuestProcess[Process Guest List]
+    GuestProcess --> GuestResults[Show Guest Dashboard]
+    
+    GuestResults --> GuestAction{User Action}
+    GuestAction -->|Send Invites| GuestInvite[RSVP System Setup]
+    GuestAction -->|Seating Chart| GuestSeating[AI Seating Optimization]
+    GuestAction -->|Export List| GuestExport[Export Options]
+    GuestAction -->|Save List| GuestSave[Require Login/Signup]
+
+    %% Venue Analyzer Flow
+    VenueTool --> VenueInput[Upload Photos & Preferences]
+    VenueInput --> VenueValid{Photos Valid?}
+    VenueValid -->|No| VenueError[Show Upload Errors]
+    VenueError --> VenueInput
+    VenueValid -->|Yes| VenueAI[AI Vision Analysis]
+    VenueAI --> VenueResults[Show Analysis & Compatibility]
+    
+    VenueResults --> VenueAction{User Action}
+    VenueAction -->|Find Similar| VenueSearch[Venue Search Results]
+    VenueAction -->|Compare Options| VenueCompare[Venue Comparison Tool]
+    VenueAction -->|Contact Venues| VenueContact[Contact Integration]
+    VenueAction -->|Save Analysis| VenueSave[Require Login/Signup]
+
+    %% Stress Planner Flow
+    StressTool --> StressAssessment[Stress Assessment Quiz]
+    StressAssessment --> StressValid{Complete Assessment?}
+    StressValid -->|No| StressPrompt[Encourage Completion]
+    StressPrompt --> StressAssessment
+    StressValid -->|Yes| StressAI[AI Wellness Analysis]
+    StressAI --> StressResults[Personalized Recommendations]
+    
+    StressResults --> StressAction{User Action}
+    StressAction -->|Follow Recommendations| StressTracking[Wellness Tracking]
+    StressAction -->|Adjust Timeline| StressTimeline[Timeline Optimization]
+    StressAction -->|Get Support| StressResources[Wellness Resources]
+    StressAction -->|Save Progress| StressSave[Require Login/Signup]
+
+    %% Email Capture Flows
+    BudgetEmail --> EmailForm[Email Capture Form]
+    TimelineEmailCapture --> EmailForm
+    EmailForm --> EmailValid{Valid Email?}
+    EmailValid -->|No| EmailError[Show Email Error]
+    EmailError --> EmailForm
+    EmailValid -->|Yes| EmailSuccess[Email Captured Successfully]
+    
+    EmailSuccess --> EmailNurture[Email Nurture Sequence]
+    EmailNurture --> EmailCTA{Email CTA Click}
+    EmailCTA -->|Create Account| Signup
+    EmailCTA -->|Try More Tools| ToolGallery
+    EmailCTA -->|Ignore| EmailContinue[Continue Nurture]
+
+    %% Account Creation Flow
+    Signup --> SignupForm[Account Creation Form]
+    SignupForm --> SignupValid{Form Valid?}
+    SignupValid -->|No| SignupError[Show Validation Errors]
+    SignupError --> SignupForm
+    SignupValid -->|Yes| AccountCreated[Account Created]
+    
+    AccountCreated --> Onboarding[Onboarding Flow]
+    Onboarding --> OnboardingSteps{Onboarding Step}
+    OnboardingSteps -->|Wedding Details| WeddingSetup[Create Wedding Profile]
+    OnboardingSteps -->|Import Data| DataImport[Import Tool Data]
+    OnboardingSteps -->|Skip| Dashboard[Wedding Dashboard]
+
+    %% Logged-in User Flows
+    Dashboard --> DashboardAction{Dashboard Action}
+    DashboardAction -->|Use Tools| ToolGalleryPro[Enhanced Tools]
+    DashboardAction -->|Manage Wedding| WeddingManagement[Wedding Management]
+    DashboardAction -->|View Progress| ProgressTracking[Progress Tracking]
+    DashboardAction -->|Collaboration| ShareWedding[Share with Partner/Family]
+
+    %% Enhanced Tools (Logged-in Users)
+    ToolGalleryPro --> EnhancedTools{Select Enhanced Tool}
+    EnhancedTools -->|Budget Pro| BudgetPro[Budget with Vendor Integration]
+    EnhancedTools -->|Timeline Pro| TimelinePro[Timeline with Automation]
+    EnhancedTools -->|Guests Pro| GuestPro[Guest with RSVP Automation]
+    EnhancedTools -->|Venue Pro| VenuePro[Venue with Booking Integration]
+    EnhancedTools -->|Wellness Pro| StressPro[Wellness with Progress Tracking]
+
+    %% Data Flow Integration
+    BudgetSave --> Dashboard
+    TimelineSave --> Dashboard
+    GuestSave --> Dashboard
+    VenueSave --> Dashboard
+    StressSave --> Dashboard
+    WeddingSetup --> Dashboard
+
+    %% Cross-tool Promotion
+    ToolCrossPromo --> CrossPromoChoice{Suggested Tool}
+    CrossPromoChoice -->|Budget from Timeline| BudgetTool
+    CrossPromoChoice -->|Timeline from Budget| TimelineTool
+    CrossPromoChoice -->|Guests from Timeline| GuestTool
+    CrossPromoChoice -->|Venue from Budget| VenueTool
+    CrossPromoChoice -->|Wellness Check| StressTool
+    CrossPromoChoice -->|Dashboard| Dashboard
+
+    %% Premium Upgrade Flow
+    EnhancedTools --> PremiumFeature{Premium Feature}
+    PremiumFeature -->|Free User| UpgradePrompt[Upgrade Prompt]
+    PremiumFeature -->|Premium User| PremiumAccess[Full Feature Access]
+    UpgradePrompt --> UpgradeDecision{Upgrade Decision}
+    UpgradeDecision -->|Yes| PaymentFlow[Payment Processing]
+    UpgradeDecision -->|No| FreeAlternative[Limited Free Version]
+    PaymentFlow --> PremiumAccess
+
+    %% Exit Points and Re-engagement
+    EmailContinue --> ReturnUser{Return Visit}
+    ReturnUser -->|Email Link| DirectTool
+    ReturnUser -->|Organic| Landing
+    ReturnUser -->|Bookmark| Dashboard
+
+    %% Wedding Completion Flow
+    ProgressTracking --> WeddingComplete{Wedding Complete?}
+    WeddingComplete -->|Yes| PostWedding[Post-Wedding Features]
+    WeddingComplete -->|No| ContinuePlanning[Continue Planning]
+    PostWedding --> PostWeddingAction{Post-Wedding Action}
+    PostWeddingAction -->|Share Story| WeddingStory[Share Wedding Story]
+    PostWeddingAction -->|Thank You Cards| ThankYouTool[Thank You Management]
+    PostWeddingAction -->|Vendor Reviews| VendorReviews[Review Vendors]
+    PostWeddingAction -->|New Wedding| NewWedding[Plan Another Wedding]
+
+    %% Analytics and Optimization Points
+    BudgetResults -.-> Analytics[(Analytics Tracking)]
+    TimelineResults -.-> Analytics
+    GuestResults -.-> Analytics
+    VenueResults -.-> Analytics
+    StressResults -.-> Analytics
+    EmailSuccess -.-> Analytics
+    AccountCreated -.-> Analytics
+    PremiumAccess -.-> Analytics
+
+    %% Error Handling and Support
+    BudgetError -.-> Support[Customer Support]
+    TimelineError -.-> Support
+    GuestError -.-> Support
+    VenueError -.-> Support
+    EmailError -.-> Support
+    SignupError -.-> Support
+
+    %% Styling
+    classDef entryPoint fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef tool fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef conversion fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef premium fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef decision fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef success fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#c62828,stroke-width:2px
+
+    class Start,Landing,SocialTool,AdLanding,PartnerTool entryPoint
+    class BudgetTool,TimelineTool,GuestTool,VenueTool,StressTool,ToolGallery tool
+    class EmailSuccess,AccountCreated,Dashboard,PremiumAccess success
+    class BudgetPro,TimelinePro,GuestPro,VenuePro,StressPro,UpgradePrompt premium
+    class Entry,LandingChoice,ToolSelect,BudgetAction,TimelineAction,GuestAction,VenueAction,StressAction decision
+    class EmailForm,Signup,BudgetEmail,TimelineEmailCapture conversion
+    class BudgetError,TimelineError,GuestError,VenueError,EmailError,SignupError error

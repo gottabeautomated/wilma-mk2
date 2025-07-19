@@ -7,33 +7,45 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Neue elegante Farbpalette
+        // Wilma Brand Colors (aus Markenhandbuch)
+        'wilma-rosa': '#FFE6EC',
+        'wilma-mint': '#D9F6EF', 
+        'wilma-creme': '#FFF8F2',
+        'wilma-dark': '#34495E',
+        
+        // Erweiterte Farbpalette
         primary: {
-          50: '#FDFDFD',
-          100: '#F9F3F0',  // Soft Rosé
-          200: '#E6D4C1',  // Unterton-Hintergrund
-          300: '#DBC2A4',  // Champagner
-          400: '#9D7D6A',  // Akzentfarbe
-          500: '#7A6152',
-          600: '#5D4A3E',
-          700: '#453529',
-          800: '#2D231A',
-          900: '#1A140D',
+          50: '#FFF8F2',   // Wilma Creme
+          100: '#FFE6EC',  // Wilma Rosa
+          200: '#FFD1DC',  // Heller Rosa
+          300: '#FFBDCC',  // Rosa
+          400: '#FF9FB3',  // Mittlerer Rosa
+          500: '#FF8199',  // Kräftiger Rosa
+          600: '#E6737F',  // Dunkler Rosa
+          700: '#CC6566',  // Sehr dunkler Rosa
+          800: '#B3574C',  // Braun-Rosa
+          900: '#994933',  // Dunkelbraun
         },
-        graphite: '#353535',
-        champagne: '#DBC2A4',
-        accent: '#9D7D6A',
-        softrose: '#F9F3F0',
-        undertone: '#E6D4C1',
-        royal: '#6B46C1',      // Royales Lila
-        'royal-light': '#8B5CF6', // Helles Royallila
-        'royal-dark': '#553C9A',   // Dunkles Royallila
-        gold: '#D4AF37',           // Elegantes Gold
-        'gold-light': '#F4E4A6',   // Helles Gold
-        'gold-dark': '#B8941F',    // Dunkles Gold
-        moss: '#6B7F5B',           // Moosgrün
-        'moss-light': '#8FA584',   // Helles Moosgrün
-        'moss-dark': '#4A5A41',    // Dunkles Moosgrün
+        secondary: {
+          50: '#D9F6EF',   // Wilma Mint
+          100: '#C4F0E7',  // Heller Mint
+          200: '#AFEADF',  // Mint
+          300: '#9AE4D7',  // Mittlerer Mint
+          400: '#85DECF',  // Kräftiger Mint
+          500: '#70D8C7',  // Dunkler Mint
+          600: '#5BC2B3',  // Sehr dunkler Mint
+          700: '#46AC9F',  // Teal
+          800: '#31968B',  // Dunkler Teal
+          900: '#1C8077',  // Sehr dunkler Teal
+        },
+        accent: '#34495E',     // Wilma Dark
+        graphite: '#2C3E50',   // Etwas heller als Wilma Dark
+        
+        // Zusätzliche Farben für UI
+        success: '#27AE60',
+        warning: '#F39C12',
+        error: '#E74C3C',
+        info: '#3498DB',
       },
       fontFamily: {
         'serif': ['Playfair Display', 'serif'],
@@ -72,4 +84,4 @@ export default {
     },
   },
   plugins: [],
-} 
+}

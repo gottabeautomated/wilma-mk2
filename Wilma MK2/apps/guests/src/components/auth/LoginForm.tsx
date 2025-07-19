@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { useToast } from '../ui/toast';
-import { useAuth } from '../../lib/auth';
+import { useAuth } from '../../contexts/AuthContext';
 
 export const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, error } = useAuth();
+  const { signIn } = useAuth();
   const { success, error: showError, ToastContainer } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,11 +74,6 @@ export const LoginForm: React.FC = () => {
             />
           </div>
 
-          {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          )}
 
           <Button
             type="submit"
@@ -112,4 +107,4 @@ export const LoginForm: React.FC = () => {
       </Card>
     </div>
   );
-}; 
+};

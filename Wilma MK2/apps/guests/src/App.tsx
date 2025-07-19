@@ -2,7 +2,7 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Heart, Users, Home, BarChart3, Download } from 'lucide-react'
-import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { AuthProvider, useAuth, ProtectedRoute } from './contexts/AuthContext'
 import { LoginForm } from './components/auth/LoginForm'
 import { WeddingSelector } from './components/WeddingSelector'
 import Header from './components/Header'
@@ -14,8 +14,8 @@ import Analytics from './pages/Analytics'
 import Settings from './pages/Settings'
 import './index.css'
 
-// Protected Route Component
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// Custom Protected Route for Wedding Selection
+const WeddingProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, currentWedding, loading } = useAuth()
   
   if (loading) {
@@ -79,55 +79,55 @@ const AppRoutes: React.FC = () => {
       <Route 
         path="/" 
         element={
-          <ProtectedRoute>
+          <WeddingProtectedRoute>
             <AppLayout>
               <Dashboard />
             </AppLayout>
-          </ProtectedRoute>
+          </WeddingProtectedRoute>
         } 
       />
       
       <Route 
         path="/guests" 
         element={
-          <ProtectedRoute>
+          <WeddingProtectedRoute>
             <AppLayout>
               <GuestList />
             </AppLayout>
-          </ProtectedRoute>
+          </WeddingProtectedRoute>
         } 
       />
       
       <Route 
         path="/seating" 
         element={
-          <ProtectedRoute>
+          <WeddingProtectedRoute>
             <AppLayout>
               <SeatingChart />
             </AppLayout>
-          </ProtectedRoute>
+          </WeddingProtectedRoute>
         } 
       />
       
       <Route 
         path="/analytics" 
         element={
-          <ProtectedRoute>
+          <WeddingProtectedRoute>
             <AppLayout>
               <Analytics />
             </AppLayout>
-          </ProtectedRoute>
+          </WeddingProtectedRoute>
         } 
       />
       
       <Route 
         path="/settings" 
         element={
-          <ProtectedRoute>
+          <WeddingProtectedRoute>
             <AppLayout>
               <Settings />
             </AppLayout>
-          </ProtectedRoute>
+          </WeddingProtectedRoute>
         } 
       />
       
@@ -146,4 +146,4 @@ const App: React.FC = () => {
   )
 }
 
-export default App 
+export default App

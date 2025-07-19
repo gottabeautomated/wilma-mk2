@@ -13,8 +13,8 @@ import {
   Camera,
   Download
 } from 'lucide-react'
-import { useAuth } from '../lib/auth'
-import { seatingAPI } from '../lib/seatingAPI'
+import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 
 const Navigation: React.FC = () => {
   const { currentWedding } = useAuth()
@@ -43,7 +43,18 @@ const Navigation: React.FC = () => {
         setTimeout(() => reject(new Error('Timeout')), 3000)
       )
       
-      const statsPromise = seatingAPI.getGuestStatistics(currentWedding.id)
+      const statsPromise = supabase
+        .from('guests')
+        .select('status')
+        .eq('wedding_id', currentWedding.id)
+        .then(({ data, error }) => {
+          if (error) throw error
+          const total = data?.length || 0
+          const confirmed = data?.filter(g => g.status === 'confirmed').length || 0
+          const pending = data?.filter(g => g.status === 'pending').length || 0
+          const declined = data?.filter(g => g.status === 'declined').length || 0
+          return { total, confirmed, pending, declined }
+        })
       
       const stats = await Promise.race([statsPromise, timeoutPromise]) as any
       setStatistics(stats || {
@@ -205,4 +216,4 @@ const Navigation: React.FC = () => {
   )
 }
 
-export default Navigation 
+export default Navigation

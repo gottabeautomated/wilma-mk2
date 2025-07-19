@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { GuestList as GuestListComponent } from '../components/GuestList'
 import { Guest } from '../types/guest'
 import { seatingAPI } from '../lib/seatingAPI'
-import { useAuth } from '../lib/auth'
+import { useAuth } from '../contexts/AuthContext'
 import { Card } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
@@ -258,4 +258,4 @@ const GuestList: React.FC = () => {
   )
 }
 
-export default GuestList 
+export default GuestList

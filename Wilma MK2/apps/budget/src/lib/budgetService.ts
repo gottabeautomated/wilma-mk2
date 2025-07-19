@@ -1,6 +1,22 @@
 import { supabase } from './supabase'
 import { BudgetData, BudgetCategory } from '../types/budget'
 import { aiService } from './aiService'
+import { LoggingService } from './logging'
+
+// Security helper to get current authenticated user
+const getCurrentUserId = async (): Promise<string | null> => {
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser()
+    if (error) {
+      LoggingService.logError(error, { context: 'getCurrentUserId' })
+      return null
+    }
+    return user?.id || null
+  } catch (error) {
+    LoggingService.logError(error as Error, { context: 'getCurrentUserId' })
+    return null
+  }
+}
 
 export interface BudgetCalculationResult {
   categories: BudgetCategory[]
@@ -53,27 +69,50 @@ class BudgetService {
   }
 
   async calculateBudget(budgetData: BudgetData): Promise<BudgetCalculationResult> {
-    const categories = this.calculateBudgetBreakdown(budgetData)
-    const pricePerGuest = budgetData.totalBudget / budgetData.guestCount
-    const budgetEfficiency = this.calculateBudgetEfficiency(budgetData)
-
-    // 🤖 KI-Anfrage hier!
-    console.log('🤖 Starte KI-Analyse für Budget...')
-    const aiRecommendations = await aiService.generateIntelligentRecommendations(budgetData)
-    console.log('✅ KI-Analyse abgeschlossen:', aiRecommendations)
+    const startTime = performance.now()
+    const userId = await getCurrentUserId()
     
-    // Speichere die Berechnung in Supabase
-    await this.saveBudgetCalculation(budgetData, categories, aiRecommendations)
+    try {
+      // 📊 Log budget calculation start
+      LoggingService.logBudgetCalculation(budgetData, userId ?? undefined)
+      
+      const categories = this.calculateBudgetBreakdown(budgetData)
+      const pricePerGuest = budgetData.totalBudget / budgetData.guestCount
+      const budgetEfficiency = this.calculateBudgetEfficiency(budgetData)
 
-    return {
-      categories,
-      recommendations: aiRecommendations.recommendations,
-      savingTips: aiRecommendations.savingTips,
-      personalizedAdvice: aiRecommendations.personalizedAdvice,
-      riskAnalysis: aiRecommendations.riskAnalysis,
-      totalBudget: budgetData.totalBudget,
-      pricePerGuest,
-      budgetEfficiency
+      // 🤖 KI-Anfrage hier!
+      console.log('🤖 Starte KI-Analyse für Budget...')
+      const aiRecommendations = await aiService.generateIntelligentRecommendations(budgetData)
+      console.log('✅ KI-Analyse abgeschlossen:', aiRecommendations)
+      
+      // Speichere die Berechnung in Supabase
+      await this.saveBudgetCalculation(budgetData, categories, aiRecommendations)
+
+      // ⚡ Log performance
+      const duration = performance.now() - startTime
+      LoggingService.logPerformance('budget-calculation', duration, {
+        userId: userId ?? undefined,
+        guestCount: budgetData.guestCount,
+        totalBudget: budgetData.totalBudget
+      })
+
+      return {
+        categories,
+        recommendations: aiRecommendations.recommendations,
+        savingTips: aiRecommendations.savingTips,
+        personalizedAdvice: aiRecommendations.personalizedAdvice,
+        riskAnalysis: aiRecommendations.riskAnalysis,
+        totalBudget: budgetData.totalBudget,
+        pricePerGuest,
+        budgetEfficiency
+      }
+    } catch (error) {
+      LoggingService.logError(error as Error, {
+        context: 'calculateBudget',
+        userId: userId ?? undefined,
+        budgetData
+      })
+      throw error
     }
   }
 
@@ -166,7 +205,14 @@ class BudgetService {
 
   private async saveBudgetCalculation(budgetData: BudgetData, categories: BudgetCategory[], aiRecommendations?: any): Promise<void> {
     try {
+      // 🔒 Security: Get authenticated user ID
+      const userId = await getCurrentUserId()
+      if (!userId) {
+        throw new Error('User not authenticated - cannot save budget')
+      }
+
       console.log('💾 Speichere Budget in Supabase...', {
+        user_id: userId,
         email: budgetData.email,
         partner1_name: budgetData.partner1Name,
         partner2_name: budgetData.partner2Name,
@@ -179,6 +225,8 @@ class BudgetService {
       const { data, error } = await supabase
         .from('budget_calculations')
         .insert({
+          // 🔒 KRITISCH: user_id für RLS Security
+          user_id: userId,
           // Vollständige Eingabedaten für input_data
           input_data: {
             email: budgetData.email,
@@ -194,7 +242,7 @@ class BudgetService {
           },
           // Berechnete Kategorien für category_breakdown
           category_breakdown: categories,
-          // KI-Empfehlungen für ai_recommendations (falls Spalte existiert)
+          // KI-Empfehlungen für ai_recommendations
           ai_recommendations: aiRecommendations ? {
             recommendations: aiRecommendations.recommendations || [],
             savingTips: aiRecommendations.savingTips || [],
@@ -205,8 +253,8 @@ class BudgetService {
             calculatedAt: new Date().toISOString()
           } : null,
           // Zusätzliche berechnete Werte
-          confidence_score: aiRecommendations ? 0.85 : 0.75, // Vertrauen in die Berechnung
-          // Basis-Informationen für einfache Abfragen
+          confidence_score: aiRecommendations ? 0.85 : 0.75,
+          // Basis-Informationen für einfache Abfragen (Backward Compatibility)
           total_budget: budgetData.totalBudget,
           email: budgetData.email,
           partner1_name: budgetData.partner1Name,
@@ -225,6 +273,7 @@ class BudgetService {
       } else {
         console.log('✅ Budget erfolgreich gespeichert:', data)
         console.log('📊 Gespeicherte Daten enthalten:')
+        console.log('   - User ID:', userId)
         console.log('   - Eingabedaten:', Object.keys(data[0]?.input_data || {}))
         console.log('   - Budget-Kategorien:', data[0]?.category_breakdown?.length || 0)
         console.log('   - KI-Empfehlungen:', aiRecommendations ? 'Ja' : 'Nein')
@@ -235,12 +284,20 @@ class BudgetService {
     }
   }
 
-  async getUserBudgets(email: string): Promise<any[]> {
+  async getUserBudgets(): Promise<any[]> {
     try {
+      // 🔒 Security: Get authenticated user ID
+      const userId = await getCurrentUserId()
+      if (!userId) {
+        console.warn('User not authenticated - cannot fetch budgets')
+        return []
+      }
+
+      // RLS automatically filters by user_id, but we can be explicit
       const { data, error } = await supabase
         .from('budget_calculations')
         .select('*')
-        .eq('email', email)
+        .eq('user_id', userId)
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -248,6 +305,7 @@ class BudgetService {
         return []
       }
 
+      console.log(`✅ Fetched ${data?.length || 0} budgets for user ${userId}`)
       return data || []
     } catch (error) {
       console.error('Error fetching from Supabase:', error)

@@ -13,6 +13,8 @@
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
     "@supabase/supabase-js": "^2.38.5",
+    "@wilma/auth": "file:../../packages/auth",
+    "@wilma/database": "file:../../packages/database",
     "framer-motion": "^10.16.16",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
@@ -20,6 +22,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.48.2",
     "react-query": "^3.39.3",
+    "react-router-dom": "^6.20.1",
     "recharts": "^2.8.0",
     "zod": "^3.22.4",
     "zustand": "^4.4.7"

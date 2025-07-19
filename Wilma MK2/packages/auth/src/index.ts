@@ -13,6 +13,7 @@ export interface AuthUser {
 
 // Re-export the centralized Auth Provider and Hook
 export { WilmaAuthProvider, useAuth, withAuth } from './AuthProvider';
+export { ProtectedRoute } from './components/ProtectedRoute';
 
 // Legacy Auth helpers (for backward compatibility)
 export const signUp = async (email: string, password: string, userData?: Partial<AuthUser>) => {
@@ -63,4 +64,4 @@ export const getCurrentSession = async (): Promise<Session | null> => {
 
 export const onAuthStateChange = (callback: (event: string, session: Session | null) => void) => {
   return supabase.auth.onAuthStateChange(callback);
-}; 
+};

@@ -7,10 +7,12 @@ import BudgetResults from './components/BudgetResults'
 import Toast from './components/Toast'
 import { BudgetData } from './types/budget'
 import { budgetService, BudgetCalculationResult } from './lib/budgetService'
+import { LoggingService } from './lib/logging'
 import './styles/animations.css'
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import UserBudgets from './components/UserBudgets'
 import { ConsentDemo } from './components/ConsentDemo'
+import { WilmaAuthProvider, ProtectedRoute } from '@wilma/auth'
 
 const App: React.FC = () => {
   const [view, setView] = useState<'form' | 'confirmation' | 'results'>('form')
@@ -20,6 +22,12 @@ const App: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('')
   const [countdown, setCountdown] = useState(3)
   const [isCalculating, setIsCalculating] = useState(false)
+
+  // Initialize logging service
+  useEffect(() => {
+    LoggingService.init()
+    LoggingService.logUserAction('app-loaded')
+  }, [])
 
   const handleFormComplete = async (data: BudgetData) => {
     setBudgetData(data)
@@ -178,23 +186,29 @@ const App: React.FC = () => {
   )
 
   return (
-    <Router>
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50">
-        <Header />
-        
-        <main className="pt-20"> {/* Account for fixed header */}
-          <Routes>
-            <Route path="/" element={<WeddingBudgetForm />} />
-            <Route path="/meine-budgets" element={<UserBudgets userEmail="demo@example.com" />} />
-            <Route path="/consent-demo" element={<ConsentDemo />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-        
-        <Footer />
-      </div>
-    </Router>
+    <WilmaAuthProvider>
+      <Router>
+        <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50">
+          <Header />
+          
+          <main className="pt-20"> {/* Account for fixed header */}
+            <Routes>
+              <Route path="/" element={<WeddingBudgetForm />} />
+              <Route path="/meine-budgets" element={
+                <ProtectedRoute requireAuth={true} redirectTo="http://localhost:3000">
+                  <UserBudgets userEmail="demo@example.com" />
+                </ProtectedRoute>
+              } />
+              <Route path="/consent-demo" element={<ConsentDemo />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+          
+          <Footer />
+        </div>
+      </Router>
+    </WilmaAuthProvider>
   )
 }
 
-export default App 
+export default App

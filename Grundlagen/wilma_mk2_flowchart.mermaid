@@ -1,0 +1,117 @@
+graph TB
+    %% User Entry Points
+    A[User landet auf wilma.com] --> B{Neuer oder bestehender User?}
+    B -->|Neu| C[Landing Page - Tool Gallery]
+    B -->|Bestehend| D[Dashboard - Gespeicherte Daten]
+    
+    %% Landing Page Flow
+    C --> E{Welches Tool wählen?}
+    
+    %% Tool Selection
+    E -->|Budget| F[budget.wilma.com<br/>Budget Calculator]
+    E -->|Timeline| G[timeline.wilma.com<br/>Timeline Generator]
+    E -->|Gäste| H[guests.wilma.com<br/>Guest Manager]
+    E -->|Location| I[venue.wilma.com<br/>Venue Analyzer]
+    E -->|Wellness| J[wellness.wilma.com<br/>Stress Planner]
+    
+    %% Budget Calculator Flow
+    F --> F1[Formular ausfüllen<br/>Gästeanzahl, Ort, Stil, Budget]
+    F1 --> F2[AI-Processing<br/>Regionale Preise + Empfehlungen]
+    F2 --> F3[Ergebnisse anzeigen<br/>Budgetaufteilung + Chart]
+    F3 --> F4[Email Capture für Export]
+    F4 --> F5{Account erstellen?}
+    
+    %% Timeline Generator Flow
+    G --> G1[Hochzeitsdatum + Details eingeben]
+    G1 --> G2[AI generiert Timeline<br/>Tasks + Milestones + Deadlines]
+    G2 --> G3[Interaktive Timeline<br/>Drag & Drop, Progress Tracking]
+    G3 --> G4[Export + Email Capture]
+    G4 --> G5{Account erstellen?}
+    
+    %% Guest Manager Flow
+    H --> H1[Gästeliste importieren<br/>CSV Upload oder manuell]
+    H1 --> H2[RSVP Dashboard<br/>Status tracking + Statistiken]
+    H2 --> H3[Sitzplan erstellen<br/>AI-optimierte Anordnung]
+    H3 --> H4[Export + Kommunikation]
+    H4 --> H5{Account erstellen?}
+    
+    %% Venue Analyzer Flow
+    I --> I1[Venue Fotos hochladen]
+    I1 --> I2[AI Computer Vision<br/>Stil, Kapazität, Features erkennen]
+    I2 --> I3[Kompatibilitäts-Score<br/>Pros/Cons + Empfehlungen]
+    I3 --> I4[Vergleich mehrerer Venues]
+    I4 --> I5{Account erstellen?}
+    
+    %% Stress Planner Flow
+    J --> J1[Stress Assessment Fragebogen]
+    J1 --> J2[AI Wellness Empfehlungen<br/>Timeline Anpassungen]
+    J2 --> J3[Progress Tracking<br/>Stress Level Monitoring]
+    J3 --> J4[Personalisierte Tipps]
+    J4 --> J5{Account erstellen?}
+    
+    %% Account Creation & Cross-Tool Integration
+    F5 -->|Ja| K[Account erstellen]
+    G5 -->|Ja| K
+    H5 -->|Ja| K
+    I5 -->|Ja| K
+    J5 -->|Ja| K
+    
+    F5 -->|Nein| L[Anderes Tool ausprobieren]
+    G5 -->|Nein| L
+    H5 -->|Nein| L
+    I5 -->|Nein| L
+    J5 -->|Nein| L
+    
+    K --> M[Unified Dashboard<br/>Alle Tools + Daten integriert]
+    L --> E
+    
+    %% Dashboard Features
+    M --> M1[Wedding Progress Overview]
+    M --> M2[Cross-Tool Recommendations<br/>z.B. Timeline basierend auf Budget]
+    M --> M3[Collaboration Features<br/>Partner + Wedding Party einladen]
+    M --> M4[Vendor Marketplace Integration]
+    M --> M5[Export & Sharing Features]
+    
+    %% Technical Architecture Layer
+    subgraph "Technical Infrastructure"
+        N1[Shared UI Library<br/>@wilma/ui]
+        N2[API Client<br/>@wilma/api-client]
+        N3[Shared Types<br/>@wilma/types]
+        N4[Supabase Database<br/>PostgreSQL + Auth + Real-time]
+        N5[OpenAI Integration<br/>AI Recommendations]
+        N6[Vercel Deployment<br/>CDN + Edge Functions]
+    end
+    
+    %% Data Flow
+    subgraph "Data & State Management"
+        O1[Jotai State Management<br/>Atomic State Model]
+        O2[React Query<br/>Server State Caching]
+        O3[Local Storage<br/>Anonymous Sessions]
+        O4[Supabase Real-time<br/>Collaborative Updates]
+    end
+    
+    %% Conversion Funnel
+    subgraph "Conversion Strategy"
+        P1[Tool Usage<br/>Immediate Value]
+        P2[Email Capture<br/>25-40% Conversion]
+        P3[Account Creation<br/>15-20% Email-to-Signup]
+        P4[Platform Adoption<br/>Cross-tool Usage]
+        P5[Premium Features<br/>Advanced AI + Collaboration]
+    end
+    
+    %% User Journey Outcomes
+    M1 --> Q{Planning Complete?}
+    Q -->|Ja| R[Wedding erfolgreiche geplant!<br/>Success Story + Reviews]
+    Q -->|Nein| S[Continued Planning<br/>More Tool Usage + Refinement]
+    S --> M
+    
+    %% Styling
+    classDef toolClass fill:#FFE6EC,stroke:#FF69B4,stroke-width:2px
+    classDef aiClass fill:#E6F3FF,stroke:#4A90E2,stroke-width:2px
+    classDef techClass fill:#E8F5E8,stroke:#28A745,stroke-width:2px
+    classDef conversionClass fill:#FFF2E6,stroke:#FFA500,stroke-width:2px
+    
+    class F,G,H,I,J toolClass
+    class F2,G2,H3,I2,J2 aiClass
+    class N1,N2,N3,N4,N5,N6,O1,O2,O3,O4 techClass
+    class P1,P2,P3,P4,P5 conversionClass

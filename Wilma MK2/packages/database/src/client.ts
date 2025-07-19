@@ -12,4 +12,4 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   }
 })
 
-export type SupabaseClient = typeof supabase 
+export type SupabaseClient = typeof supabase

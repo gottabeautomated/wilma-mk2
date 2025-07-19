@@ -43,19 +43,19 @@
 /* Elegant component styles */
 @layer components {
   .btn-primary {
-    @apply bg-champagne text-graphite px-6 py-3 rounded-elegant font-medium hover:bg-accent hover:text-white transition-all duration-300 shadow-elegant hover:shadow-elegant-lg transform hover:-translate-y-0.5;
+    @apply bg-primary-300 text-wilma-dark px-6 py-3 rounded-elegant font-medium hover:bg-primary-500 hover:text-white transition-all duration-300 shadow-elegant hover:shadow-lg transform hover:-translate-y-0.5;
   }
   
   .btn-secondary {
-    @apply bg-white text-accent border-2 border-accent px-6 py-3 rounded-elegant font-medium hover:bg-accent hover:text-white transition-all duration-300 shadow-elegant;
+    @apply bg-white text-wilma-dark border-2 border-primary-300 px-6 py-3 rounded-elegant font-medium hover:bg-primary-300 hover:text-white transition-all duration-300 shadow-elegant;
   }
   
   .btn-outline {
-    @apply border-2 border-champagne text-accent px-6 py-3 rounded-elegant font-medium hover:bg-champagne hover:text-graphite transition-all duration-300;
+    @apply border-2 border-primary-300 text-wilma-dark px-6 py-3 rounded-elegant font-medium hover:bg-primary-300 hover:text-white transition-all duration-300;
   }
   
   .card-elegant {
-    @apply bg-white/90 backdrop-blur-sm rounded-elegant-lg shadow-elegant border border-undertone p-6 hover:shadow-gold transition-all duration-300;
+    @apply bg-white/90 backdrop-blur-sm rounded-elegant-lg shadow-elegant border border-primary-200 p-6 hover:shadow-lg transition-all duration-300;
   }
   
   .card-elegant:hover {
@@ -65,7 +65,7 @@
   }
   
   .input-elegant {
-    @apply w-full px-4 py-3 border border-undertone rounded-elegant bg-white/80 text-graphite placeholder-accent/60 transition-all duration-200;
+    @apply w-full px-4 py-3 border border-primary-200 rounded-elegant bg-white/80 text-wilma-dark placeholder-wilma-dark/60 transition-all duration-200;
   }
   
   .input-elegant:focus {
@@ -122,7 +122,7 @@
   }
   
   .gradient-text-elegant {
-    @apply bg-gradient-to-r from-accent to-champagne bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent;
   }
   
   .floating-elements {
@@ -152,7 +152,7 @@
 /* Elegant utility styles */
 @layer utilities {
   .text-elegant-gradient {
-    @apply bg-gradient-to-r from-accent to-champagne bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent;
   }
   
   .glass-elegant {
@@ -172,15 +172,15 @@
   }
   
   .elegant-divider {
-    @apply w-24 h-0.5 bg-gradient-to-r from-transparent via-champagne to-transparent mx-auto my-8;
+    @apply w-24 h-0.5 bg-gradient-to-r from-transparent via-primary-300 to-transparent mx-auto my-8;
   }
   
   .royal-gradient {
-    @apply bg-gradient-to-r from-royal via-royal-light to-accent;
+    @apply bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-500;
   }
   
   .royal-gradient-text {
-    @apply bg-gradient-to-r from-royal via-royal-light to-accent bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-500 bg-clip-text text-transparent;
   }
   
   .gold-gradient {
@@ -233,4 +233,4 @@
   .elegant-icon-hover:hover {
     color: var(--color-gold);
   }
-} 
+}
