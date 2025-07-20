@@ -202,4 +202,4 @@ export default function CompleteRegistrationPage() {
       </div>
     </div>
   );
-} 
+}
